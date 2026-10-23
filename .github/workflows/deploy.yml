@@ -1,4 +1,4 @@
-# Publishes the site to GitHub Pages every time code is pushed to main.
+# Tests, builds and publishes the app to GitHub Pages every time code is pushed to main.
 name: Deploy to GitHub Pages
 
 on:
@@ -23,15 +23,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      # For now the site is only the step 0 test page, served at /kindling/spike/.
-      # The real app's build output will be added alongside it later.
-      - name: Assemble site
-        run: |
-          mkdir -p _site
-          cp -r spike _site/spike
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # If a test fails, nothing is published, so a broken version never reaches the phone.
+      - run: npm test
+      - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: dist
       - id: deployment
         uses: actions/deploy-pages@v4

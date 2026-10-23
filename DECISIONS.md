@@ -44,7 +44,21 @@ export/import is the only backup and is built early.
 **Chose:** Ship a throwaway test page first (`spike/`).
 **Why:** Three things could undermine the design: (1) does data survive on the phone, (2) does the camera work,
 (3) do links from Reminders/Shortcuts open the installed app or a separate Safari copy with empty data?
-**Result:** _pending, fill in after testing on the iPhone._
+**Result (2026-10-23):** (3) confirmed as a problem. Links from Reminders and from a Shortcuts "Open URLs"
+action both open a Safari tab with *separate, empty* storage (0 taps), not the installed app. Shortcuts' "Open App"
+action does not list the web app. So per-activity deep links into the installed app are not possible on iPhone.
+(1) Data survived closing and reopening the app. (2) The camera works. Also, the app opens offline (airplane mode).
+
+## D11. No deep links; reminders are plain nudges, plus a gentle "open from home screen" page
+**Chose:** Reminders/Shortcuts just remind ("Skin care"); you open Kindling from its icon. Routines get their own tab
+so they're two taps away, and the "plan for tomorrow" card is on the home screen from the afternoon. If Kindling is
+opened in Safari on an iPhone (e.g. via a link), it shows a friendly "open Kindling from your home screen" page
+instead of an empty copy of the app.
+**Rejected:** Using Kindling as a Safari bookmark so links would work. Safari can delete a website's stored data
+after 7 days without a visit; installed home-screen apps are exempt. Losing history is worse than losing links.
+**Kept for later:** The app still uses proper internal addresses (`#/routines`, `#/log/...`), so deep links can
+return cheaply.
+**Change our minds if:** Apple lets links open installed web apps.
 
 ## D8. Day boundary at 4am
 **Chose:** "Today" runs from 4am to 4am.
