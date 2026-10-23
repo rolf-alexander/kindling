@@ -16,6 +16,8 @@ export interface Hobby {
   colour: string; // one of the soft palette colours in styles.css
   emoji?: string;
   createdAt: number;
+  /** Each status change, oldest first, so the timeline can show moments like "Picked back up". */
+  history?: { at: number; status: HobbyStatus }[];
 }
 
 export interface Project {

@@ -64,7 +64,7 @@ export async function logIt(target: LogTarget, details: LogDetails = {}): Promis
     if (target.hobbyId) {
       const hobby = await db.hobbies.get(target.hobbyId);
       if (hobby?.status === 'paused') {
-        await db.hobbies.update(hobby.id, { status: 'active' });
+        await db.hobbies.update(hobby.id, { status: 'active', history: [...(hobby.history ?? []), { at: now, status: 'active' }] });
         undo.unpausedHobbyId = hobby.id;
       }
     }
@@ -81,7 +81,10 @@ export async function undoLog(undo: Undo) {
     // Setting a field to undefined removes it, so the step/task is open again.
     if (undo.finishedStepId) await db.steps.update(undo.finishedStepId, { doneAt: undefined });
     if (undo.finishedTaskId) await db.tasks.update(undo.finishedTaskId, { doneAt: undefined });
-    if (undo.unpausedHobbyId) await db.hobbies.update(undo.unpausedHobbyId, { status: 'paused' });
+    if (undo.unpausedHobbyId) {
+      const hobby = await db.hobbies.get(undo.unpausedHobbyId);
+      await db.hobbies.update(undo.unpausedHobbyId, { status: 'paused', history: hobby?.history?.slice(0, -1) });
+    }
   });
 }
 

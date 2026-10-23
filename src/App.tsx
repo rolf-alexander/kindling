@@ -6,6 +6,7 @@ import { isIOS, isInstalledApp, requestPersistentStorage } from './lib/device';
 import { TodayScreen } from './screens/TodayScreen';
 import { CalendarScreen } from './screens/CalendarScreen';
 import { HobbiesScreen } from './screens/HobbiesScreen';
+import { HobbyScreen } from './screens/HobbyScreen';
 import { RoutinesScreen } from './screens/RoutinesScreen';
 import { MoreScreen } from './screens/MoreScreen';
 import { ImportScreen } from './screens/ImportScreen';
@@ -34,10 +35,11 @@ export function App() {
 
   const tab = tabs.find((t) => path.startsWith(t.path)) ?? tabs[0];
   const Screen = screens[path] ?? screens[tab.path];
+  const hobbyId = /^\/hobbies\/(.+)$/.exec(path)?.[1];
 
   return (
     <>
-      <Screen />
+      {hobbyId ? <HobbyScreen key={hobbyId} id={hobbyId} /> : <Screen />}
       <TabBar current={tab.path} />
     </>
   );

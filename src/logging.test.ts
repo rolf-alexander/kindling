@@ -18,9 +18,9 @@ describe('logIt', () => {
   it('brings a paused hobby back to active, and undo pauses it again', async () => {
     await db.hobbies.add({ id: 'h1', name: 'Chess', status: 'paused', colour: 'sky', createdAt: 0 });
     const undo = await logIt({ title: 'Puzzle', refType: 'adhoc', hobbyId: 'h1', goalIds: [] });
-    expect((await db.hobbies.get('h1'))!.status).toBe('active');
+    expect((await db.hobbies.get('h1'))!).toMatchObject({ status: 'active', history: [{ status: 'active' }] });
     await undoLog(undo);
-    expect((await db.hobbies.get('h1'))!.status).toBe('paused');
+    expect((await db.hobbies.get('h1'))!).toMatchObject({ status: 'paused', history: [] });
     expect(await db.logs.count()).toBe(0);
   });
 

@@ -7,6 +7,14 @@ export const STATUS_LABELS: Record<HobbyStatus, string> = {
   semiRetired: 'Semi-retired',
 };
 
+/** Calm explanations shown when choosing a status. */
+export const STATUS_DESCRIPTIONS: Record<HobbyStatus, string> = {
+  active: 'Part of your life right now. Suggested on the Today screen.',
+  want: "Something you'd like to get into. Suggested alongside active hobbies.",
+  paused: "Resting for now. Not suggested, and its goals rest too. Logging something brings it back.",
+  semiRetired: 'Part of your story. Not suggested, but its timeline stays.',
+};
+
 /** The order hobby groups appear in. */
 export const STATUS_ORDER: HobbyStatus[] = ['active', 'want', 'paused', 'semiRetired'];
 

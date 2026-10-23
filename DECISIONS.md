@@ -118,6 +118,16 @@ suggestions back as they were) and **Details**, for 8 seconds. Tapping the card 
 **Guard:** a replacement suggestion slides into the same spot, so taps on a ✓ are ignored for 0.8 seconds after a log.
 **Project steps** offer "Step done" or "Worked on it", since a step can take more than one session.
 
+## D18. A hobby's page tells a story, not a score
+**Chose:** At the top, a year strip: 12 soft dots, one per month, shaded by how much you did it. There are no numbers.
+Below that, a timeline grouped by month: each log (with note, duration, photo) plus moments like "Picked back up",
+"Resting from here", "Started project …". A long unexplained break shows as "N weeks in between".
+**Why:** The brief asked for "my relationship with it, not performance stats". Counts and totals invite comparison;
+shades and moments don't.
+**Details:** Hobbies now remember their status changes (`history`) so the timeline can show them. A break that a
+pause already explains gets no extra gap marker. Paused hobbies say "Resting since …, nothing's expected of it."
+**Rejected wording:** "N weeks later". Reading newest-first, it pointed the wrong way in time.
+
 ---
 
 ## Provisional (revisit after a week of real use)
