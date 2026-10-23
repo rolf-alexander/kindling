@@ -163,4 +163,3 @@ db.version(1).stores({
   settings: 'key',
 });
 
-export const newId = () => crypto.randomUUID();

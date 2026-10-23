@@ -1,9 +1,26 @@
+import { ChevronLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { navigate } from '../lib/router';
 
-/** A page with an iOS-style large title, and an optional small line above it. */
-export function Screen({ title, eyebrow, children }: { title: string; eyebrow?: string; children: ReactNode }) {
+interface ScreenProps {
+  title: string;
+  /** A small line above the title, e.g. the date. */
+  eyebrow?: string;
+  /** Adds a "‹ Back" link to the given screen. */
+  back?: { label: string; path: string };
+  children: ReactNode;
+}
+
+/** A page with an iOS-style large title. */
+export function Screen({ title, eyebrow, back, children }: ScreenProps) {
   return (
     <main className="screen">
+      {back && (
+        <button className="back" onClick={() => navigate(back.path)}>
+          <ChevronLeft size={24} strokeWidth={2.2} />
+          {back.label}
+        </button>
+      )}
       {eyebrow && <p className="screen-eyebrow">{eyebrow}</p>}
       <h1 className="large-title">{title}</h1>
       {children}

@@ -1,7 +1,11 @@
-import { BookOpen, ClipboardPaste, HardDriveDownload, ListTodo, Target } from 'lucide-react';
+import { BookOpen, ChevronRight, ClipboardPaste, HardDriveDownload, ListTodo, type LucideIcon, Target } from 'lucide-react';
 import { Screen } from '../components/Screen';
+import { navigate } from '../lib/router';
 
-const sections = [
+/** A row without a path isn't built yet. */
+type Row = { label: string; Icon: LucideIcon; path?: string };
+
+const sections: { header: string; rows: Row[] }[] = [
   {
     header: 'Lists',
     rows: [
@@ -13,8 +17,8 @@ const sections = [
   {
     header: 'Your data',
     rows: [
-      { label: 'Paste in activities', Icon: ClipboardPaste },
-      { label: 'Backup & restore', Icon: HardDriveDownload },
+      { label: 'Paste in activities', Icon: ClipboardPaste, path: '/more/import' },
+      { label: 'Backup & restore', Icon: HardDriveDownload, path: '/more/backup' },
     ],
   },
 ];
@@ -26,12 +30,12 @@ export function MoreScreen() {
         <section key={header}>
           <h2 className="section-header">{header}</h2>
           <div className="list">
-            {rows.map(({ label, Icon }) => (
-              <div className="list-row" key={label}>
+            {rows.map(({ label, Icon, path }) => (
+              <button className="list-row" key={label} disabled={!path} onClick={() => path && navigate(path)}>
                 <span className="icon-tile"><Icon size={16} /></span>
                 <span className="label">{label}</span>
-                <span className="detail">Soon</span>
-              </div>
+                {path ? <ChevronRight size={18} className="chevron" /> : <span className="detail">Soon</span>}
+              </button>
             ))}
           </div>
         </section>

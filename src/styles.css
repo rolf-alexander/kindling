@@ -113,6 +113,81 @@ button { font: inherit; color: inherit; }
 }
 .list-row .label { flex: 1; }
 .list-row .detail { color: var(--muted); font-size: 15px; }
+.list-row .row-subtitle { display: block; color: var(--muted); font-size: 14px; }
+.list-row .chevron { color: var(--muted); opacity: 0.6; }
+button.list-row {
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+button.list-row:not(:disabled):active { background: var(--separator); }
+.dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* --- Buttons --- */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+.button.secondary { background: var(--accent-soft); color: var(--accent); }
+.button:disabled { opacity: 0.45; }
+.button:not(:disabled):active { filter: brightness(0.92); }
+.back {
+  display: flex;
+  align-items: center;
+  margin-left: -8px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 17px;
+}
+
+/* --- Text --- */
+.stack > * + * { margin-top: 10px; }
+.note { margin: 8px var(--gutter) 0; color: var(--muted); font-size: 15px; }
+.muted { color: var(--muted); }
+.row-between { display: flex; justify-content: space-between; gap: 12px; }
+.plain-list { margin: 0; padding-left: 18px; color: var(--muted); font-size: 15px; }
+.plain-list li + li { margin-top: 6px; }
+
+/* --- Paste box (16px text stops iPhone zooming in when you tap it) --- */
+textarea.paste {
+  display: block;
+  width: 100%;
+  min-height: 240px;
+  border: 0;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  background: var(--card);
+  color: var(--text);
+  font: 16px/1.4 ui-monospace, "SF Mono", Menlo, monospace;
+  resize: vertical;
+}
+details.format { margin-top: 24px; }
+details.format summary { margin: 0 var(--gutter); color: var(--accent); font-weight: 600; cursor: pointer; }
+details.format pre {
+  margin: 10px 0 0;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--card);
+  font: 13px/1.45 ui-monospace, "SF Mono", Menlo, monospace;
+  white-space: pre-wrap;
+}
 
 /* --- Gentle empty states --- */
 .empty {

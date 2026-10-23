@@ -8,13 +8,17 @@ import { CalendarScreen } from './screens/CalendarScreen';
 import { HobbiesScreen } from './screens/HobbiesScreen';
 import { RoutinesScreen } from './screens/RoutinesScreen';
 import { MoreScreen } from './screens/MoreScreen';
+import { ImportScreen } from './screens/ImportScreen';
+import { BackupScreen } from './screens/BackupScreen';
 
-const screens: Record<string, () => React.JSX.Element> = {
+const screens: Record<string, () => React.JSX.Element | null> = {
   '/today': TodayScreen,
   '/calendar': CalendarScreen,
   '/hobbies': HobbiesScreen,
   '/routines': RoutinesScreen,
   '/more': MoreScreen,
+  '/more/import': ImportScreen,
+  '/more/backup': BackupScreen,
 };
 
 export function App() {
@@ -29,7 +33,7 @@ export function App() {
   if (isIOS() && !isInstalledApp()) return <OpenFromHomeScreen />;
 
   const tab = tabs.find((t) => path.startsWith(t.path)) ?? tabs[0];
-  const Screen = screens[tab.path];
+  const Screen = screens[path] ?? screens[tab.path];
 
   return (
     <>
