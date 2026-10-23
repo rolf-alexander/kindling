@@ -5,3 +5,4 @@ node_modules/
 dist/
 _site/
 .DS_Store
+*.tsbuildinfo
