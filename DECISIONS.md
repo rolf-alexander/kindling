@@ -100,10 +100,29 @@ sheet for Save to Files. Restoring shows what's in the file, then replaces every
 long, so the share gets blocked. **Why replace, not merge:** merging two histories has many edge cases, and a backup
 is for getting back to a known state.
 
+## D16. How suggestions are picked
+**Chose:** For each energy level, a weighted random pick. Weight = 1 + days since this thing was last done +
+days since its hobby was last done (each capped at 30; "never" counts as 30). Gaps are filled starting with the
+level that has the fewest options, so a level with only one hobby to offer still gets it.
+**Why random rather than "most neglected first":** strict ordering feels mechanical and always shows the same
+thing. Weighting keeps a gentle pull towards what's been left a while, with some surprise.
+**Today's three are saved**, so the screen doesn't reshuffle each time you open the app. They change when you log
+one, tap "Show me others", or a new day starts.
+**Change our minds if:** suggestions feel stale or too repetitive in real use. The weights are one function in
+`src/suggest.ts`.
+
+## D17. One-tap logging with Undo
+**Chose:** Each suggestion has a ✓ that logs it immediately. A message offers **Undo** (which also puts the
+suggestions back as they were) and **Details**, for 8 seconds. Tapping the card itself opens the log sheet.
+**Why:** It's truly one tap, and Undo makes a mis-tap cost nothing. Asking "are you sure?" would add friction every time.
+**Guard:** a replacement suggestion slides into the same spot, so taps on a ✓ are ignored for 0.8 seconds after a log.
+**Project steps** offer "Step done" or "Worked on it", since a step can take more than one session.
+
 ---
 
 ## Provisional (revisit after a week of real use)
-- **Tapping a suggestion** opens the log sheet (big Done button; note/duration/photo optional). No visible timer.
+- **Tapping a suggestion's ✓** logs it at once; tapping the card opens the log sheet (note/duration/photo
+  optional). No visible timer. (See D17.)
 - **The home screen is the same all day**, with the "plan for tomorrow" card from the afternoon.
 
 ## Undecided (kept in `config` so they're one-line changes)
