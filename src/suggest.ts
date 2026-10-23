@@ -93,9 +93,12 @@ function suggestibleStatuses(): Set<HobbyStatus> {
   return statuses;
 }
 
-/** Whether a doable may ever appear as a right-now suggestion (ignoring what's been done today). */
-export function isSuggestible(d: Doable, world: World): boolean {
-  if (d.planAhead) return false;
+/**
+ * Whether a doable may ever appear as a right-now suggestion (ignoring what's been done today).
+ * With allowPlanAhead, plan-ahead activities count too: that's for the "plan for tomorrow" card.
+ */
+export function isSuggestible(d: Doable, world: World, allowPlanAhead = false): boolean {
+  if (d.planAhead && !allowPlanAhead) return false;
   if (d.refType === 'step' && config.suggestOnlyFirstProjectStep && !d.isFirstStep) return false;
   if (d.refType === 'task' && !d.hobbyId && !d.projectId && !config.unlinkedTasksOnHome) return false;
   if (d.projectId) {
@@ -110,7 +113,7 @@ export function isSuggestible(d: Doable, world: World): boolean {
 }
 
 /** How much more likely something is to be picked: grows with days since it (and its hobby) were last done. */
-function weigher(logs: Log[], today: Day) {
+export function weigher(logs: Log[], today: Day) {
   const lastDay = new Map<string, Day>();
   const remember = (key: string, day: Day) => {
     const current = lastDay.get(key);

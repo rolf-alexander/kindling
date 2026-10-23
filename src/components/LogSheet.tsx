@@ -1,7 +1,8 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Camera, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { db, type Hobby, type Log } from '../db';
+import { type Day, db, type Hobby, type Log } from '../db';
+import { formatDay } from '../lib/dates';
 import { colourVar } from '../lib/labels';
 import { savePhoto } from '../lib/photos';
 import { type LogTarget, logIt, type Undo, updateLogDetails } from '../logging';
@@ -19,12 +20,14 @@ interface LogSheetProps {
   colour?: string;
   /** Hobbies to choose from when logging something new. */
   hobbies: Hobby[];
+  /** Log it for an earlier day instead of today. */
+  day?: Day;
   onClose: () => void;
   onLogged?: (undo: Undo) => void;
 }
 
 /** Log something, with an optional note, duration and photo. Also used to add details to a log afterwards. */
-export function LogSheet({ target, existing, context, colour, hobbies, onClose, onLogged }: LogSheetProps) {
+export function LogSheet({ target, existing, context, colour, hobbies, day, onClose, onLogged }: LogSheetProps) {
   const [note, setNote] = useState(existing?.note ?? '');
   const [duration, setDuration] = useState<number | undefined>(existing?.durationMin);
   const [photoId, setPhotoId] = useState<string | undefined>(existing?.photoId);
@@ -66,7 +69,7 @@ export function LogSheet({ target, existing, context, colour, hobbies, onClose, 
     if (existing) {
       await updateLogDetails(existing.id, details);
     } else if (target) {
-      const undo = await logIt({ ...target, hobbyId }, { ...details, stepFinished });
+      const undo = await logIt({ ...target, hobbyId }, { ...details, stepFinished }, day);
       onLogged?.(undo);
     }
     onClose();
@@ -81,6 +84,7 @@ export function LogSheet({ target, existing, context, colour, hobbies, onClose, 
           </span>
         )}
         <h2 className="sheet-title">{title}</h2>
+        {day && !existing && <p className="hint" style={{ margin: 0 }}>For {formatDay(day)}</p>}
       </div>
 
       {isNew && hobbies.length > 0 && (

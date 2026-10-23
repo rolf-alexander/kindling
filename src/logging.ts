@@ -1,7 +1,7 @@
 // Recording that you did something, and undoing it.
 
-import { db, type RefType } from './db';
-import { today } from './lib/dates';
+import { db, type Day, type RefType } from './db';
+import { middayOf, today } from './lib/dates';
 import { newId } from './lib/ids';
 
 /** What a log is about. A Doable (see suggest.ts) fits this shape, and so does something new ("adhoc"). */
@@ -31,15 +31,17 @@ export interface Undo {
   unpausedHobbyId?: string;
 }
 
-export async function logIt(target: LogTarget, details: LogDetails = {}): Promise<Undo> {
+/** Logs something, today by default. `on` logs it for an earlier day instead (for things you forgot to log). */
+export async function logIt(target: LogTarget, details: LogDetails = {}, on?: Day): Promise<Undo> {
   const tables = [db.logs, db.steps, db.tasks, db.hobbies];
   return db.transaction('rw', tables, async () => {
     const now = Date.now();
+    const day = on ?? today();
     const undo: Undo = { logId: newId(), title: target.title };
     await db.logs.add({
       id: undo.logId,
-      at: now,
-      day: today(),
+      at: day === today() ? now : middayOf(day),
+      day,
       title: target.title,
       refType: target.refType,
       refId: target.refId,

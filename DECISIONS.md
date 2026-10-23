@@ -128,6 +128,18 @@ shades and moments don't.
 pause already explains gets no extra gap marker. Paused hobbies say "Resting since …, nothing's expected of it."
 **Rejected wording:** "N weeks later". Reading newest-first, it pointed the wrong way in time.
 
+## D19. Planning ahead and the calendar
+**Plan card:** shown on Today from 1pm until the 4am day boundary, so it's there at bedtime. It offers the two
+plan-ahead activities (from active or want-to-pursue hobbies) not done for longest. They're picked by that order, not
+randomly, so the card doesn't reshuffle. "Pencil in" adds it to tomorrow; ignoring the card does nothing.
+At 1am, "tomorrow" means the day you'll wake up to.
+**Pencilled in:** any activity, step or task can be pencilled in for any day from the Calendar. Plans show first on
+Today on their day, then simply stop showing once the day has passed. No "missed" state exists (D6).
+**Calendar:** a month grid with one soft dot per log in its hobby's colour (up to 4), and hollow rings for plans.
+Tapping a day shows what was done or planned.
+**Added:** "Add something you did" for past days, for things you forgot to log. They're timed at midday that day.
+**Today's date** now follows the 4am boundary too, so at 1am it still shows tonight's date.
+
 ---
 
 ## Provisional (revisit after a week of real use)

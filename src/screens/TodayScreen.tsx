@@ -6,7 +6,8 @@ import { LogSheet } from '../components/LogSheet';
 import { LogSomethingSheet } from '../components/LogSomethingSheet';
 import { Empty, Screen } from '../components/Screen';
 import type { Log } from '../db';
-import { today } from '../lib/dates';
+import { PlanCard } from '../components/PlanCard';
+import { formatDay, isPlanningTime, today } from '../lib/dates';
 import { navigate } from '../lib/router';
 import { type LogTarget, logIt, type Undo, undoLog } from '../logging';
 import { type Doable, keyOf, suggest, toDoables } from '../suggest';
@@ -41,7 +42,8 @@ export function TodayScreen() {
 
   if (!world || !picks) return null; // still loading
 
-  const date = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+  // Uses the 4am day boundary, so at 1am it still shows tonight's date.
+  const date = formatDay(day);
 
   if (world.hobbies.length === 0) {
     return (
@@ -128,6 +130,8 @@ export function TodayScreen() {
       <button className="button secondary" style={{ marginTop: 16 }} onClick={() => setSheet({ kind: 'pick' })}>
         <Plus size={18} /> Log something else
       </button>
+
+      {isPlanningTime() && <PlanCard world={world} today={day} />}
 
       {logsToday.length > 0 && (
         <>

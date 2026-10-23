@@ -44,6 +44,13 @@ describe('logIt', () => {
     expect(await db.logs.count()).toBe(2);
   });
 
+  it('can log something for an earlier day', async () => {
+    const undo = await logIt({ title: 'Walk', refType: 'adhoc', goalIds: [] }, {}, '2026-10-01');
+    const log = await db.logs.get(undo.logId);
+    expect(log!.day).toBe('2026-10-01');
+    expect(new Date(log!.at).getDate()).toBe(1);
+  });
+
   it('can add details afterwards', async () => {
     const undo = await logIt({ title: 'Walk', refType: 'adhoc', goalIds: [] });
     await updateLogDetails(undo.logId, { note: 'Lovely light', durationMin: 45 });
