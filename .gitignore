@@ -1,0 +1,7 @@
+# Design reference screenshots belong to Gentler Streak; keep them local, not in the public repo
+Gentler_streak_reference_images/
+
+node_modules/
+dist/
+_site/
+.DS_Store
