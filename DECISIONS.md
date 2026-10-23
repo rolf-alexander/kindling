@@ -140,6 +140,18 @@ Tapping a day shows what was done or planned.
 **Added:** "Add something you did" for past days, for things you forgot to log. They're timed at midday that day.
 **Today's date** now follows the 4am boundary too, so at 1am it still shows tonight's date.
 
+## D20. Projects
+**Where:** on their hobby's page, and in a Projects section on the Hobbies tab (which also lists stand-alone
+projects and, further down, finished ones).
+**Next steps:** up to 5 open at a time. Only the first is suggested on Today, so any step can be moved to the front
+("Make this the next step"). New steps go to the end.
+**Finishing a step** (from Today or the project page) opens an optional "What's next?" prompt with "Not now" and
+"Undo". After the last step it also offers "Mark project finished". On Today this prompt replaces the usual
+"Logged" toast rather than stacking both.
+**Finished projects** are archived: they leave suggestions, keep their timeline, and can be reopened.
+**Not done (yet):** activities that belong to a project rather than a hobby. Steps cover this for now; the data
+model already allows it if it's wanted.
+
 ---
 
 ## Provisional (revisit after a week of real use)

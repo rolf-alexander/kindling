@@ -1,7 +1,8 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ChevronRight, ClipboardPaste, Plus, Sprout } from 'lucide-react';
+import { ChevronRight, ClipboardPaste, FolderOpen, Plus, Sprout } from 'lucide-react';
 import { useState } from 'react';
 import { HobbySheet } from '../components/HobbySheets';
+import { ProjectSheet } from '../components/ProjectSheets';
 import { Empty, Screen } from '../components/Screen';
 import { db } from '../db';
 import { colourVar, STATUS_LABELS, STATUS_ORDER } from '../lib/labels';
@@ -14,12 +15,31 @@ const SECTION_NOTES: Partial<Record<string, string>> = {
 export function HobbiesScreen() {
   const hobbies = useLiveQuery(() => db.hobbies.toArray());
   const activities = useLiveQuery(() => db.activities.toArray());
-  const [adding, setAdding] = useState(false);
-  if (!hobbies || !activities) return null; // still loading
+  const projects = useLiveQuery(() => db.projects.toArray());
+  const [adding, setAdding] = useState<'hobby' | 'project' | null>(null);
+  if (!hobbies || !activities || !projects) return null; // still loading
 
-  const newHobbySheet = adding && (
-    <HobbySheet onClose={() => setAdding(false)} onCreated={(id) => navigate(`/hobbies/${id}`)} />
+  const newHobbySheet = adding === 'hobby' && (
+    <HobbySheet onClose={() => setAdding(null)} onCreated={(id) => navigate(`/hobbies/${id}`)} />
   );
+  const newProjectSheet = adding === 'project' && (
+    <ProjectSheet hobbies={hobbies.filter((h) => h.status !== 'semiRetired')} onClose={() => setAdding(null)}
+      onCreated={(id) => navigate(`/projects/${id}`)} />
+  );
+  const hobbyName = (id?: string) => hobbies.find((h) => h.id === id)?.name;
+  const projectRows = (status: 'active' | 'finished') =>
+    projects.filter((p) => p.status === status).sort((a, b) => a.name.localeCompare(b.name)).map((p) => (
+      <button className="list-row" key={p.id} onClick={() => navigate(`/projects/${p.id}`)}>
+        <span className="icon-tile"><FolderOpen size={16} /></span>
+        <span className="label">
+          {p.name}
+          <span className="row-subtitle">{hobbyName(p.hobbyId) ?? 'Stand-alone'}</span>
+        </span>
+        <ChevronRight size={18} className="chevron" />
+      </button>
+    ));
+  const activeProjects = projectRows('active');
+  const finishedProjects = projectRows('finished');
 
   if (hobbies.length === 0) {
     return (
@@ -31,7 +51,7 @@ export function HobbiesScreen() {
           <button className="button" onClick={() => navigate('/more/import')}>
             <ClipboardPaste size={18} /> Paste in your activities
           </button>
-          <button className="button secondary" onClick={() => setAdding(true)}><Plus size={18} /> Add one hobby</button>
+          <button className="button secondary" onClick={() => setAdding('hobby')}><Plus size={18} /> Add one hobby</button>
         </div>
         {newHobbySheet}
       </Screen>
@@ -66,10 +86,23 @@ export function HobbiesScreen() {
           </section>
         );
       })}
-      <button className="button secondary" style={{ marginTop: 24 }} onClick={() => setAdding(true)}>
-        <Plus size={18} /> New hobby
-      </button>
+      <h2 className="section-header">Projects</h2>
+      {activeProjects.length > 0 ? <div className="list">{activeProjects}</div>
+        : <p className="note" style={{ marginTop: 0 }}>No projects on the go.</p>}
+
+      <div className="stack" style={{ marginTop: 24 }}>
+        <button className="button secondary" onClick={() => setAdding('hobby')}><Plus size={18} /> New hobby</button>
+        <button className="button secondary" onClick={() => setAdding('project')}><Plus size={18} /> New project</button>
+      </div>
+
+      {finishedProjects.length > 0 && (
+        <>
+          <h2 className="section-header">Finished projects</h2>
+          <div className="list">{finishedProjects}</div>
+        </>
+      )}
       {newHobbySheet}
+      {newProjectSheet}
     </Screen>
   );
 }

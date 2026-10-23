@@ -7,16 +7,21 @@ import { LogSomethingSheet } from '../components/LogSomethingSheet';
 import { Empty, Screen } from '../components/Screen';
 import type { Log } from '../db';
 import { PlanCard } from '../components/PlanCard';
+import { NextStepSheet } from '../components/ProjectSheets';
 import { formatDay, isPlanningTime, today } from '../lib/dates';
 import { navigate } from '../lib/router';
 import { type LogTarget, logIt, type Undo, undoLog } from '../logging';
 import { type Doable, keyOf, suggest, toDoables } from '../suggest';
 import { contextFor, loadWorld, saveSuggestions } from '../world';
 
+/** A log that can still be undone, with the suggestions as they were before it. */
+type Logged = { undo: Undo; previousKeys: (string | null)[] };
+
 type OpenSheet =
   | { kind: 'log'; target: LogTarget; context?: string; colour?: string }
   | { kind: 'details'; log: Log }
   | { kind: 'pick' }
+  | { kind: 'next'; projectId: string; logged: Logged }
   | null;
 
 export function TodayScreen() {
@@ -24,7 +29,7 @@ export function TodayScreen() {
   const day = today();
   const [sheet, setSheet] = useState<OpenSheet>(null);
   // The "Logged" message, with what's needed to undo it and put the suggestions back as they were.
-  const [toast, setToast] = useState<{ undo: Undo; previousKeys: (string | null)[] } | null>(null);
+  const [toast, setToast] = useState<Logged | null>(null);
   const toastTimer = useRef<number | undefined>(undefined);
   const lastLogAt = useRef(0);
 
@@ -68,22 +73,27 @@ export function TodayScreen() {
     .filter((d): d is Doable => !!d && !doneKeys.has(d.key));
   const suggestions = picks.filter((p): p is Doable => !!p);
 
-  const showToast = (undo: Undo) => {
+  // After logging: a finished project step asks "what's next?" (with its own Undo); anything else shows the toast.
+  const afterLog = (undo: Undo, projectId?: string) => {
     lastLogAt.current = Date.now();
-    setToast({ undo, previousKeys: pickKeys });
+    const logged = { undo, previousKeys: pickKeys };
+    if (undo.finishedStepId && projectId) {
+      setSheet({ kind: 'next', projectId, logged });
+      return;
+    }
+    setToast(logged);
     window.clearTimeout(toastTimer.current);
     toastTimer.current = window.setTimeout(() => setToast(null), 8000);
   };
   const quickLog = async (d: Doable) => {
     // A new suggestion slides into the same spot, so ignore a quick second tap that was meant for the first.
     if (Date.now() - lastLogAt.current < 800) return;
-    showToast(await logIt(d));
+    afterLog(await logIt(d), d.projectId);
   };
-  const undo = async () => {
-    if (!toast) return;
+  const undo = async (logged: Logged) => {
     setToast(null);
-    await undoLog(toast.undo);
-    await saveSuggestions({ day, keys: toast.previousKeys });
+    await undoLog(logged.undo);
+    await saveSuggestions({ day, keys: logged.previousKeys });
   };
   const openLog = (target: LogTarget) => {
     const { label, colour } = contextFor(target, world);
@@ -164,14 +174,25 @@ export function TodayScreen() {
             setToast(null);
             if (log) setSheet({ kind: 'details', log });
           }}>Details</button>
-          <button onClick={undo}>Undo</button>
+          <button onClick={() => undo(toast)}>Undo</button>
         </div>
       )}
 
       {sheet?.kind === 'log' && (
         <LogSheet target={sheet.target} context={sheet.context} colour={sheet.colour} hobbies={world.hobbies}
-          onClose={() => setSheet(null)} onLogged={showToast} />
+          // Only close if it's still the log sheet: logging a step may have opened the "what's next?" sheet.
+          onClose={() => setSheet((s) => (s?.kind === 'log' ? null : s))}
+          onLogged={(u) => afterLog(u, sheet.target.projectId)} />
       )}
+      {sheet?.kind === 'next' && (() => {
+        const project = world.projects.find((p) => p.id === sheet.projectId);
+        const openSteps = world.steps.filter((s) => s.projectId === sheet.projectId && !s.doneAt).length;
+        return project && (
+          <NextStepSheet projectId={project.id} projectName={project.name} stepTitle={sheet.logged.undo.title}
+            openSteps={openSteps} onClose={() => setSheet(null)}
+            onUndo={async () => { setSheet(null); await undo(sheet.logged); }} />
+        );
+      })()}
       {sheet?.kind === 'details' && (
         <LogSheet existing={sheet.log} context={contextFor(sheet.log, world).label}
           colour={contextFor(sheet.log, world).colour} hobbies={world.hobbies} onClose={() => setSheet(null)} />

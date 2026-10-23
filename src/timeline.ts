@@ -25,13 +25,12 @@ const monthKey = (at: number) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 };
 
-export function buildTimeline(hobby: Hobby, logs: Log[], projects: Project[]): TimelineMonth[] {
-  const events: Exclude<TimelineItem, { kind: 'gap' }>[] = [
-    { kind: 'started', at: hobby.createdAt },
-    ...logs.map((log) => ({ kind: 'log' as const, at: log.at, log })),
-  ];
+/** For a hobby's page pass the hobby; for a project's page pass null and the project in `projects`. */
+export function buildTimeline(hobby: Pick<Hobby, 'createdAt' | 'history'> | null, logs: Log[], projects: Project[]): TimelineMonth[] {
+  const events: Exclude<TimelineItem, { kind: 'gap' }>[] = logs.map((log) => ({ kind: 'log' as const, at: log.at, log }));
+  if (hobby) events.push({ kind: 'started', at: hobby.createdAt });
   let previous: HobbyStatus | undefined;
-  for (const change of hobby.history ?? []) {
+  for (const change of hobby?.history ?? []) {
     events.push({ kind: 'status', at: change.at, status: change.status, from: previous });
     previous = change.status;
   }

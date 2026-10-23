@@ -7,6 +7,7 @@ import { TodayScreen } from './screens/TodayScreen';
 import { CalendarScreen } from './screens/CalendarScreen';
 import { HobbiesScreen } from './screens/HobbiesScreen';
 import { HobbyScreen } from './screens/HobbyScreen';
+import { ProjectScreen } from './screens/ProjectScreen';
 import { RoutinesScreen } from './screens/RoutinesScreen';
 import { MoreScreen } from './screens/MoreScreen';
 import { ImportScreen } from './screens/ImportScreen';
@@ -33,13 +34,18 @@ export function App() {
   // On a computer the app runs normally, which is how it gets developed and previewed.
   if (isIOS() && !isInstalledApp()) return <OpenFromHomeScreen />;
 
-  const tab = tabs.find((t) => path.startsWith(t.path)) ?? tabs[0];
+  // Project pages belong under the Hobbies tab.
+  const tabPath = path.startsWith('/projects/') ? '/hobbies' : path;
+  const tab = tabs.find((t) => tabPath.startsWith(t.path)) ?? tabs[0];
   const Screen = screens[path] ?? screens[tab.path];
   const hobbyId = /^\/hobbies\/(.+)$/.exec(path)?.[1];
+  const projectId = /^\/projects\/(.+)$/.exec(path)?.[1];
 
   return (
     <>
-      {hobbyId ? <HobbyScreen key={hobbyId} id={hobbyId} /> : <Screen />}
+      {hobbyId ? <HobbyScreen key={hobbyId} id={hobbyId} />
+        : projectId ? <ProjectScreen key={projectId} id={projectId} />
+        : <Screen />}
       <TabBar current={tab.path} />
     </>
   );

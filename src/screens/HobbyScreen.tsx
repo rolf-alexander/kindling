@@ -1,7 +1,9 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ChevronRight, Pencil, Plus, Sprout } from 'lucide-react';
+import { ChevronRight, FolderOpen, Pencil, Plus, Sprout } from 'lucide-react';
 import { useState } from 'react';
 import { ActivitySheet, HobbySheet, StatusSheet } from '../components/HobbySheets';
+import { ProjectSheet } from '../components/ProjectSheets';
+import { navigate } from '../lib/router';
 import { LogSheet } from '../components/LogSheet';
 import { Empty, Screen } from '../components/Screen';
 import { Timeline } from '../components/Timeline';
@@ -17,6 +19,7 @@ type OpenSheet =
   | { kind: 'edit' }
   | { kind: 'activity'; activity?: Activity }
   | { kind: 'log'; log: Log }
+  | { kind: 'project' }
   | null;
 
 export function HobbyScreen({ id }: { id: string }) {
@@ -121,19 +124,21 @@ export function HobbyScreen({ id }: { id: string }) {
         </button>
       </div>
 
-      {projects.length > 0 && (
-        <>
-          <h2 className="section-header">Projects</h2>
-          <div className="list">
-            {projects.map((p) => (
-              <div className="list-row" key={p.id}>
-                <span className="label">{p.name}</span>
-                <span className="detail">{p.status === 'finished' ? 'Finished' : 'Active'}</span>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+      <h2 className="section-header">Projects</h2>
+      <div className="list">
+        {[...projects].sort((a, b) => Number(a.status === 'finished') - Number(b.status === 'finished')).map((p) => (
+          <button className="list-row" key={p.id} onClick={() => navigate(`/projects/${p.id}`)}>
+            <span className="icon-tile"><FolderOpen size={16} /></span>
+            <span className="label">{p.name}</span>
+            {p.status === 'finished' && <span className="detail">Finished</span>}
+            <ChevronRight size={18} className="chevron" />
+          </button>
+        ))}
+        <button className="list-row" onClick={() => setSheet({ kind: 'project' })}>
+          <span className="icon-tile"><Plus size={16} /></span>
+          <span className="label" style={{ color: 'var(--accent)' }}>New project</span>
+        </button>
+      </div>
 
       <Timeline months={months} onOpenLog={(log) => setSheet({ kind: 'log', log })} />
 
@@ -144,6 +149,10 @@ export function HobbyScreen({ id }: { id: string }) {
       )}
       {sheet?.kind === 'log' && (
         <LogSheet existing={sheet.log} context={hobby.name} colour={colour} hobbies={[]} onClose={() => setSheet(null)} />
+      )}
+      {sheet?.kind === 'project' && (
+        <ProjectSheet hobbies={[hobby]} hobbyId={hobby.id} onClose={() => setSheet(null)}
+          onCreated={(projectId) => navigate(`/projects/${projectId}`)} />
       )}
     </Screen>
   );
