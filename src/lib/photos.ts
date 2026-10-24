@@ -3,7 +3,7 @@ import { db } from '../db';
 import { newId } from './ids';
 
 /** Shrinks a photo on the phone (longest side to config.photoMaxSide) and saves it. Returns its ID. */
-export async function savePhoto(file: File): Promise<string> {
+export async function savePhoto(file: Blob): Promise<string> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, config.photoMaxSide / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');

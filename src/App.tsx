@@ -8,6 +8,7 @@ import { CalendarScreen } from './screens/CalendarScreen';
 import { HobbiesScreen } from './screens/HobbiesScreen';
 import { HobbyScreen } from './screens/HobbyScreen';
 import { ProjectScreen } from './screens/ProjectScreen';
+import { RecapScreen } from './screens/RecapScreen';
 import { RoutinesScreen } from './screens/RoutinesScreen';
 import { MoreScreen } from './screens/MoreScreen';
 import { ImportScreen } from './screens/ImportScreen';
@@ -46,11 +47,13 @@ export function App() {
   const Screen = screens[path] ?? screens[tab.path];
   const hobbyId = /^\/hobbies\/(.+)$/.exec(path)?.[1];
   const projectId = /^\/projects\/(.+)$/.exec(path)?.[1];
+  const recapMonth = /^\/calendar\/recap\/(\d{4}-\d{2})$/.exec(path)?.[1];
 
   return (
     <>
       {hobbyId ? <HobbyScreen key={hobbyId} id={hobbyId} />
         : projectId ? <ProjectScreen key={projectId} id={projectId} />
+        : recapMonth ? <RecapScreen key={recapMonth} month={recapMonth} />
         : <Screen />}
       <TabBar current={tab.path} />
     </>

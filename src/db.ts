@@ -120,6 +120,8 @@ export interface Media {
   order: number;
   startedAt?: number;
   finishedAt?: number;
+  /** Set once a cover has been looked up online, found or not, so it isn't asked for again. */
+  coverLookedUp?: boolean;
 }
 
 /** Photos live in their own table so lists don't have to load the images. */

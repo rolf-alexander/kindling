@@ -1,4 +1,4 @@
-import { ClipboardPaste, Flame, Plus, Shuffle, Sparkles } from 'lucide-react';
+import { ChevronRight, ClipboardPaste, Flame, Plus, Shuffle, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DoableCard } from '../components/DoableCard';
 import { LogSheet } from '../components/LogSheet';
@@ -7,7 +7,8 @@ import { Empty, Screen } from '../components/Screen';
 import type { Log } from '../db';
 import { PlanCard } from '../components/PlanCard';
 import { NextStepSheet } from '../components/ProjectSheets';
-import { formatDay, isPlanningTime, today } from '../lib/dates';
+import { config } from '../config';
+import { addDays, formatDay, isPlanningTime, today } from '../lib/dates';
 import { navigate } from '../lib/router';
 import { type LogTarget, logIt, type Undo, undoLog } from '../logging';
 import { type Doable, keyOf, suggest, toDoables } from '../suggest';
@@ -73,6 +74,11 @@ export function TodayScreen() {
     .filter((d): d is Doable => !!d && !doneKeys.has(d.key));
   const suggestions = picks.filter((p): p is Doable => !!p);
 
+  // Early in a month, offer last month's recap if there's anything in it. Ignoring it does nothing.
+  const lastMonth = addDays(`${day.slice(0, 7)}-01`, -1).slice(0, 7);
+  const showRecap = Number(day.slice(8)) <= config.recapCardDays && world.logs.some((l) => l.day.startsWith(lastMonth));
+  const lastMonthName = new Date(`${lastMonth}-15T12:00:00`).toLocaleDateString(undefined, { month: 'long' });
+
   // After logging: a finished project step asks "what's next?" (with its own Undo); anything else shows the toast.
   const afterLog = (undo: Undo, projectId?: string) => {
     lastLogAt.current = Date.now();
@@ -114,6 +120,19 @@ export function TodayScreen() {
 
   return (
     <Screen title="Today" eyebrow={date} tinted>
+      {showRecap && (
+        <div className="list">
+          <button className="list-row" onClick={() => navigate(`/calendar/recap/${lastMonth}`)}>
+            <span className="icon-tile" style={{ background: 'var(--accent)', color: '#fff' }}><Sparkles size={16} /></span>
+            <span className="label">
+              Your {lastMonthName} recap
+              <span className="row-subtitle">A look back at what you made time for</span>
+            </span>
+            <ChevronRight size={18} className="chevron" />
+          </button>
+        </div>
+      )}
+
       {pencilledIn.length > 0 && (
         <>
           <h2 className="section-header">Pencilled in</h2>

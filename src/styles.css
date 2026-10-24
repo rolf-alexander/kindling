@@ -566,7 +566,7 @@ button.card:active { filter: brightness(0.97); }
   color: var(--media);
 }
 .media-card { display: flex; align-items: center; gap: 14px; padding: 12px 14px; }
-.media-card .photo-thumb { border-radius: 10px; }
+.media-card .photo-thumb, .cover-edit .photo-thumb { border-radius: 8px; box-shadow: var(--shadow); }
 label[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
 .media-card .row-subtitle { display: block; margin-top: 2px; color: var(--muted); font-size: 14px; }
 
@@ -586,3 +586,30 @@ label[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
 .goal-count b { font-family: var(--rounded); font-size: 26px; font-weight: 800; color: var(--text); line-height: 1; }
 /* Buttons inside a white card sit on a soft tint rather than floating with their own shadow. */
 .card .button.secondary { background: var(--accent-soft); box-shadow: none; }
+.cover-edit { display: flex; align-items: center; gap: 14px; }
+.cover-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.cover-actions .pill-button { display: inline-flex; align-items: center; gap: 6px; background: var(--card); box-shadow: var(--shadow); }
+.pill-button:disabled { opacity: 0.5; }
+
+/* --- Monthly recap --- */
+.recap-part { padding: 18px; }
+.recap-label { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; color: var(--muted); }
+.recap-lead { margin: 4px 0 0; font-size: 17px; }
+.recap-big { margin: 2px 0 0; font-family: var(--rounded); font-size: 52px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+.recap-big span { font-size: 26px; letter-spacing: 0; }
+.recap-part > .cal-grid, .recap-part > .recap-rows, .recap-part > .chips,
+.recap-part > .recap-covers, .recap-part > .recap-photos { margin-top: 14px; }
+.cal-grid.mini { row-gap: 8px; }
+.mini-day { width: min(30px, 8vw); aspect-ratio: 1; justify-self: center; border-radius: 50%; background: var(--empty); }
+.recap-rows { display: flex; flex-direction: column; gap: 10px; }
+.recap-row { display: flex; align-items: center; gap: 12px; }
+.recap-row .label { flex: 1; }
+.recap-row .detail { color: var(--muted); font-size: 15px; }
+.recap-row .icon-tile { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.recap-covers { display: flex; gap: 12px; overflow-x: auto; }
+.recap-cover { display: flex; flex-direction: column; gap: 6px; width: 84px; font-size: 13px; }
+.recap-cover .photo-thumb { border-radius: 10px; }
+.recap-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.recap-photos .photo-thumb { width: 100% !important; height: auto !important; aspect-ratio: 1; border-radius: 10px; }
+.chip b { font-family: var(--rounded); }
+.mini-day[data-ahead] { background: none; box-shadow: inset 0 0 0 1.5px var(--empty); }

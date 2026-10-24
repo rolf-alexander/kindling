@@ -18,7 +18,8 @@ export async function addMedia(kind: Media['kind'], title: string) {
 }
 
 export async function updateMedia(id: string, changes: { title: string; kind: Media['kind'] }) {
-  await db.media.update(id, { title: changes.title.trim(), kind: changes.kind });
+  // A new title is worth a fresh cover search (only used while it has no cover).
+  await db.media.update(id, { title: changes.title.trim(), kind: changes.kind, coverLookedUp: false });
 }
 
 export async function startMedia(id: string) {

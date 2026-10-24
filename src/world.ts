@@ -21,7 +21,7 @@ export async function loadWorld(): Promise<World & { saved: SavedSuggestions | n
 export const saveSuggestions = (value: SavedSuggestions) => db.settings.put({ key: 'suggestions', value });
 
 /** The small line under a title (hobby or project name) and the colour to show it in. */
-export function contextFor(item: { refType: string; hobbyId?: string; projectId?: string }, world: World) {
+export function contextFor(item: { refType: string; hobbyId?: string; projectId?: string }, world: Pick<World, 'hobbies' | 'projects'>) {
   const hobby = item.hobbyId ? world.hobbies.find((h) => h.id === item.hobbyId) : undefined;
   const project = item.projectId ? world.projects.find((p) => p.id === item.projectId) : undefined;
   const name = item.refType === 'step' ? project?.name : hobby?.name ?? project?.name;

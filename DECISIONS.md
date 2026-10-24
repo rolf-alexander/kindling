@@ -204,6 +204,24 @@ with their initial. More's rows get colourful iPhone-Settings-style icons. "+ Ne
 **Own colours:** routines are pink, books and shows warm brown, and anything not linked to a hobby is grey, so they
 no longer look like they belong to the orange hobby.
 
+## D28. Covers are looked up automatically
+**Chose:** when a book or show has no cover, Kindling looks one up: books from Open Library, shows from TVmaze. Both
+are free, need no account, and let the app ask them directly from the phone. The cover is saved like a photo, so it
+works offline and goes into backups. Each item is looked up once; renaming it tries again. In its sheet you can
+"Find cover online" again, use your own photo instead, or remove the cover. Covers are shown book-shaped.
+**Trade-off:** this is the first time Kindling sends anything off the phone. Only the title goes, nothing about you.
+`config.autoCovers = false` turns it off. (Settles the "fetch covers automatically" question.)
+**Change our minds if:** covers are often wrong, e.g. a different book with the same title.
+
+## D29. A monthly recap
+**Chose:** a recap page for any month, opened from "October in review" under the calendar (or "October so far" for
+the current month), and offered on Today during the first 7 days of the next month. Ignoring it does nothing. It shows
+the days you made time for yourself (a grid of coloured circles), the hobbies you spent time on, time noted, moments
+(new hobbies, ones picked back up, projects started and finished, steps and tasks done), books and shows finished with
+their covers, goals, routines and photos. A month with nothing logged says "A quiet month. Rest counts too."
+**Rejected:** comparing with the previous month ("down from 21"), as Gentler Streak does. A comparison invites
+feeling behind, which breaks the no-guilt rules.
+
 ---
 
 ## Provisional (revisit after a week of real use)
@@ -214,7 +232,6 @@ no longer look like they belong to the orange hobby.
 ## Undecided (kept in `config` so they're one-line changes)
 - What counts as a low-energy suggestion
 - Whether semi-retired hobbies occasionally reappear in suggestions
-- Whether to fetch book/show covers automatically
 - Whether unlinked important tasks appear on the home screen
 - Whether hobby-linked tasks get a separate cap from admin tasks
 

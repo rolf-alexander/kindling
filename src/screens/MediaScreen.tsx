@@ -1,10 +1,11 @@
-import { BookOpen, Camera, Plus, Tv } from 'lucide-react';
-import { useState } from 'react';
+import { BookOpen, Camera, Plus, Search, Tv } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { PhotoThumb } from '../components/PhotoThumb';
 import { Empty, Screen } from '../components/Screen';
 import { Sheet } from '../components/Sheet';
 import { useUndoToast } from '../components/UndoToast';
 import { config } from '../config';
+import { fetchCover, fetchMissingCovers } from '../covers';
 import { db, type Media } from '../db';
 import { savePhoto } from '../lib/photos';
 import {
@@ -15,12 +16,16 @@ import { useLive } from '../lib/useLive';
 const KIND_LABEL = { book: 'Book', show: 'Show' } as const;
 const shortDate = (at: number) => new Date(at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 
+/** Covers are book-shaped: this much as wide as they are tall. */
+export const COVER_RATIO = 0.7;
+
 /** The cover photo, or a soft tile with a book or TV icon. With onPhoto, tapping it opens the camera. */
-function Cover({ media, size, onPhoto }: { media: Media; size: number; onPhoto?: (file: File) => void }) {
+export function Cover({ media, size, onPhoto }: { media: Media; size: number; onPhoto?: (file: File) => void }) {
   const Icon = media.kind === 'book' ? BookOpen : Tv;
-  if (media.photoId) return <PhotoThumb photoId={media.photoId} size={size} />;
+  const width = Math.round(size * COVER_RATIO);
+  if (media.photoId) return <PhotoThumb photoId={media.photoId} size={width} height={size} />;
   const tile = (
-    <span className="cover-tile" style={{ width: size, height: size }}>
+    <span className="cover-tile" style={{ width, height: size }}>
       {onPhoto ? <Camera size={size > 40 ? 22 : 16} /> : <Icon size={size > 40 ? 22 : 16} />}
     </span>
   );
@@ -37,6 +42,10 @@ export function MediaScreen() {
   const media = useLive('media', () => db.media.toArray());
   const [editing, setEditing] = useState<{ media?: Media } | null>(null);
   const toast = useUndoToast();
+  // Covers are looked up for anything new, including things pasted in (D28).
+  useEffect(() => {
+    if (media) fetchMissingCovers(media);
+  }, [media]);
   if (!media) return null; // still loading
 
   const back = { label: 'More', path: '/more' };
@@ -50,7 +59,8 @@ export function MediaScreen() {
     toast.show(<>Finished <b>{m.title}</b></>, () => undoFinish(m.id, undo));
   };
   const cover = async (m: Media, file: File) => setCover(m.id, await savePhoto(file));
-  const sheet = editing && <MediaSheet media={editing.media} full={upNext.length >= config.maxUpNext} onClose={() => setEditing(null)} />;
+  // Look it up again so the sheet shows changes (like a new cover) as they happen.
+  const sheet = editing && <MediaSheet media={editing.media && media.find((m) => m.id === editing.media!.id)} full={upNext.length >= config.maxUpNext} onClose={() => setEditing(null)} />;
 
   if (media.length === 0) {
     return (
@@ -142,6 +152,7 @@ function MediaSheet({ media, full, onClose }: { media?: Media; full: boolean; on
   const [title, setTitle] = useState(media?.title ?? '');
   const [kind, setKind] = useState<Media['kind']>(media?.kind ?? 'book');
   const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
 
   const save = async () => {
     if (media) await updateMedia(media.id, { title, kind });
@@ -161,6 +172,13 @@ function MediaSheet({ media, full, onClose }: { media?: Media; full: boolean; on
       setBusy(false);
     }
   };
+  const findOnline = async () => {
+    setBusy(true);
+    setMessage('');
+    const found = await fetchCover(media!);
+    setBusy(false);
+    setMessage(found ? '' : "No cover found. You can take a photo of it instead.");
+  };
 
   return (
     <Sheet onClose={onClose}>
@@ -173,11 +191,28 @@ function MediaSheet({ media, full, onClose }: { media?: Media; full: boolean; on
         ))}
       </div>
 
-      {media && media.status !== 'upNext' && (
-        <label className="button secondary" style={{ marginTop: 16 }} aria-disabled={busy}>
-          <Camera size={18} /> {media.photoId ? 'Retake cover photo' : 'Take a cover photo'}
-          <input type="file" accept="image/*" hidden onChange={(e) => choosePhoto(e.target.files?.[0])} />
-        </label>
+      {media && (
+        <>
+          <p className="field-label">Cover</p>
+          <div className="cover-edit">
+            <Cover media={media} size={72} />
+            <div className="cover-actions">
+              <label className="pill-button" aria-disabled={busy}>
+                <Camera size={15} /> {media.photoId ? 'Use my own photo' : 'Take a photo'}
+                <input type="file" accept="image/*" hidden onChange={(e) => choosePhoto(e.target.files?.[0])} />
+              </label>
+              {config.autoCovers && (
+                <button className="pill-button" disabled={busy} onClick={findOnline}>
+                  <Search size={15} /> {busy ? 'Looking…' : 'Find cover online'}
+                </button>
+              )}
+              {media.photoId && (
+                <button className="pill-button" disabled={busy} onClick={() => setCover(media.id, undefined)}>Remove cover</button>
+              )}
+            </div>
+          </div>
+          {message && <p className="hint">{message}</p>}
+        </>
       )}
 
       <div className="stack" style={{ marginTop: 20 }}>

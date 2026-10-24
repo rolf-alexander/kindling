@@ -10,6 +10,9 @@ export const config = {
   /** From this hour, the home screen shows the "plan something for tomorrow" card. */
   planCardFromHour: 13,
 
+  /** For this many days at the start of a month, Today offers last month's recap. */
+  recapCardDays: 7,
+
   /** 1 = Monday. Goal weeks start on this day. */
   weekStartsOn: 1,
 
@@ -25,6 +28,12 @@ export const config = {
 
   /** Photos are shrunk on the phone to this size (longest side, in pixels) before saving. */
   photoMaxSide: 1200,
+
+  /**
+   * Look up covers for books (Open Library) and shows (TVmaze) automatically. Only the title is sent (D28).
+   * Set to false to keep everything on the phone; you can still take cover photos yourself.
+   */
+  autoCovers: true,
 
   // --- Undecided: see DECISIONS.md ---
 

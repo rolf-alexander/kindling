@@ -1,11 +1,12 @@
-import { CalendarPlus, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
+import { CalendarPlus, ChevronLeft, ChevronRight, Plus, Sparkles, X } from 'lucide-react';
 import { useState } from 'react';
 import { LogSheet } from '../components/LogSheet';
 import { LogSomethingSheet } from '../components/LogSomethingSheet';
 import { Screen } from '../components/Screen';
-import { config } from '../config';
 import type { Day, Log } from '../db';
-import { formatDay, monthGrid, today } from '../lib/dates';
+import { formatDay, monthGrid, today, weekdayLetters } from '../lib/dates';
+import { colourFill } from '../lib/labels';
+import { navigate } from '../lib/router';
 import { useLive } from '../lib/useLive';
 import type { LogTarget } from '../logging';
 import { pencilIn, removePlan } from '../plans';
@@ -21,21 +22,6 @@ type OpenSheet =
 
 /** A day with more than this many colours shows only the first ones. */
 const MAX_COLOURS = 3;
-
-/** Weekday initials in calendar order, e.g. M T W T F S S. */
-function weekdayLetters() {
-  const sunday = new Date(2026, 0, 4); // any Sunday
-  return Array.from({ length: 7 }, (_, i) =>
-    new Date(2026, 0, sunday.getDate() + config.weekStartsOn + i).toLocaleDateString(undefined, { weekday: 'narrow' }),
-  );
-}
-
-/** One colour fills the circle; two or three share it like slices, so a mixed day looks like a mixed day. */
-function fill(colours: string[]) {
-  if (colours.length <= 1) return colours[0];
-  const share = 100 / colours.length;
-  return `conic-gradient(${colours.map((c, i) => `${c} ${i * share}% ${(i + 1) * share}%`).join(', ')})`;
-}
 
 export function CalendarScreen() {
   const world = useLive('calendar', loadWorld);
@@ -109,7 +95,7 @@ export function CalendarScreen() {
             return (
               <button key={day} className="cal-day" data-state={state} aria-pressed={day === selected}
                 data-today={day === todayDay || undefined} onClick={() => setSelected(day)}>
-                <span className="cal-circle" style={{ background: fill(colours) }}>{Number(day.slice(8))}</span>
+                <span className="cal-circle" style={{ background: colourFill(colours) }}>{Number(day.slice(8))}</span>
               </button>
             );
           })}
@@ -122,6 +108,16 @@ export function CalendarScreen() {
           </div>
         )}
       </div>
+
+      {key.length > 0 && (
+        <div className="list" style={{ marginTop: 12 }}>
+          <button className="list-row" onClick={() => navigate(`/calendar/recap/${month}`)}>
+            <span className="icon-tile" style={{ background: 'var(--accent)', color: '#fff' }}><Sparkles size={16} /></span>
+            <span className="label">{todayDay.startsWith(month) ? `${monthName} so far` : `${monthName} in review`}</span>
+            <ChevronRight size={18} className="chevron" />
+          </button>
+        </div>
+      )}
 
       <h2 className="section-header">{selected === todayDay ? `Today · ${formatDay(selected)}` : formatDay(selected)}</h2>
       {selectedPlans.length + selectedLogs.length > 0 ? (

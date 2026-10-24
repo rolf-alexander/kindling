@@ -56,3 +56,11 @@ export function daysAgo(moment: number) {
   if (days === 1) return 'yesterday';
   return `${days} days ago`;
 }
+/** Weekday initials in calendar order, e.g. M T W T F S S. */
+export function weekdayLetters() {
+  const sunday = new Date(2026, 0, 4); // any Sunday
+  return Array.from({ length: 7 }, (_, i) =>
+    new Date(2026, 0, sunday.getDate() + config.weekStartsOn + i).toLocaleDateString(undefined, { weekday: 'narrow' }),
+  );
+}
+
