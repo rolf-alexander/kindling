@@ -7,7 +7,7 @@ import { addStep, createProject, finishProject, makeNextStep, removeStep, update
 import { ENERGIES } from '../suggest';
 import { Sheet } from './Sheet';
 
-function EnergyChips({ energy, onChange }: { energy: Energy; onChange: (e: Energy) => void }) {
+export function EnergyChips({ energy, onChange }: { energy: Energy; onChange: (e: Energy) => void }) {
   return (
     <div className="chips">
       {ENERGIES.map((e) => (

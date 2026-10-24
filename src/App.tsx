@@ -12,6 +12,9 @@ import { RoutinesScreen } from './screens/RoutinesScreen';
 import { MoreScreen } from './screens/MoreScreen';
 import { ImportScreen } from './screens/ImportScreen';
 import { BackupScreen } from './screens/BackupScreen';
+import { GoalsScreen } from './screens/GoalsScreen';
+import { MediaScreen } from './screens/MediaScreen';
+import { TasksScreen } from './screens/TasksScreen';
 
 const screens: Record<string, () => React.JSX.Element | null> = {
   '/today': TodayScreen,
@@ -21,6 +24,9 @@ const screens: Record<string, () => React.JSX.Element | null> = {
   '/more': MoreScreen,
   '/more/import': ImportScreen,
   '/more/backup': BackupScreen,
+  '/more/tasks': TasksScreen,
+  '/more/media': MediaScreen,
+  '/more/goals': GoalsScreen,
 };
 
 export function App() {

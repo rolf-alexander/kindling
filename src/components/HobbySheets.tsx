@@ -1,10 +1,11 @@
 import { Check } from 'lucide-react';
 import { useState } from 'react';
 import type { Activity, Energy, Goal, Hobby, HobbyStatus } from '../db';
-import { archiveActivity, createHobby, goalIdFor, saveActivity, setHobbyStatus, updateHobby } from '../hobbies';
+import { archiveActivity, createHobby, saveActivity, setHobbyStatus, updateHobby } from '../hobbies';
 import { ENERGY_LABELS } from '../lib/energy';
 import { colourVar, HOBBY_COLOURS, STATUS_DESCRIPTIONS, STATUS_LABELS, STATUS_ORDER } from '../lib/labels';
 import { ENERGIES } from '../suggest';
+import { GoalPicker, withNewGoal } from './GoalPicker';
 import { Sheet } from './Sheet';
 
 /** Create a hobby, or rename and recolour an existing one. */
@@ -98,15 +99,8 @@ export function ActivitySheet({ hobbyId, activity, goals, onClose }: {
   const [goalIds, setGoalIds] = useState<string[]>(activity?.goalIds ?? []);
   const [newGoal, setNewGoal] = useState('');
 
-  const toggleGoal = (id: string) => {
-    if (goalIds.includes(id)) setGoalIds(goalIds.filter((g) => g !== id));
-    else if (goalIds.length < 2) setGoalIds([...goalIds, id]);
-  };
-
   const save = async () => {
-    const ids = [...goalIds];
-    if (newGoal.trim() && ids.length < 2) ids.push(await goalIdFor(newGoal));
-    await saveActivity({ ...activity, title, hobbyId, energy, planAhead, goalIds: ids });
+    await saveActivity({ ...activity, title, hobbyId, energy, planAhead, goalIds: await withNewGoal(goalIds, newGoal) });
     onClose();
   };
 
@@ -136,18 +130,7 @@ export function ActivitySheet({ hobbyId, activity, goals, onClose }: {
       </div>
       <p className="hint">Plan-ahead activities aren't suggested on the spot. They're offered for tomorrow instead.</p>
 
-      <p className="field-label">Counts towards (up to 2 goals)</p>
-      <div className="chips">
-        {goals.map((g) => (
-          <button key={g.id} className="chip" aria-pressed={goalIds.includes(g.id)} onClick={() => toggleGoal(g.id)}>
-            {g.name}
-          </button>
-        ))}
-      </div>
-      {goalIds.length < 2 && (
-        <input className="text-field" style={{ marginTop: 8 }} value={newGoal} onChange={(e) => setNewGoal(e.target.value)}
-          placeholder="Or a new goal, like 'Outside'" />
-      )}
+      <GoalPicker goals={goals} goalIds={goalIds} onChange={setGoalIds} newGoal={newGoal} onNewGoal={setNewGoal} />
 
       <div className="stack" style={{ marginTop: 20 }}>
         <button className="button" disabled={!title.trim()} onClick={save}>{activity ? 'Save' : 'Add activity'}</button>

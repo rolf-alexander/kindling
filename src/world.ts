@@ -25,6 +25,9 @@ export function contextFor(item: { refType: string; hobbyId?: string; projectId?
   const hobby = item.hobbyId ? world.hobbies.find((h) => h.id === item.hobbyId) : undefined;
   const project = item.projectId ? world.projects.find((p) => p.id === item.projectId) : undefined;
   const name = item.refType === 'step' ? project?.name : hobby?.name ?? project?.name;
-  const label = item.refType === 'task' ? ['Task', name].filter(Boolean).join(' · ') : name ?? '';
+  const label = item.refType === 'task' ? ['Task', name].filter(Boolean).join(' · ')
+    : item.refType === 'routine' ? 'Routine'
+    : item.refType === 'media' ? 'Reading & Watching'
+    : name ?? '';
   return { label, colour: hobby ? colourVar(hobby.colour) : 'var(--accent)' };
 }

@@ -4,13 +4,16 @@ import { useState } from 'react';
 import { LogSheet } from '../components/LogSheet';
 import { NextStepSheet, ProjectSheet, StepSheet } from '../components/ProjectSheets';
 import { Empty, Screen } from '../components/Screen';
+import { TaskRow, TaskSheet } from '../components/TaskSheets';
 import { Timeline } from '../components/Timeline';
+import { useUndoToast } from '../components/UndoToast';
 import { config } from '../config';
-import { db, type Log, type Step } from '../db';
+import { db, type Log, type Step, type Task } from '../db';
 import { ENERGY_LABELS, EnergyIcon } from '../lib/energy';
 import { colourVar } from '../lib/labels';
 import { logIt, type Undo, undoLog } from '../logging';
 import { finishProject, reopenProject } from '../projects';
+import { byDue, taskTarget } from '../tasks';
 import { buildTimeline } from '../timeline';
 
 type OpenSheet =
@@ -18,20 +21,23 @@ type OpenSheet =
   | { kind: 'step'; step?: Step; isNext?: boolean }
   | { kind: 'next'; stepTitle: string; undo: Undo }
   | { kind: 'log'; log: Log }
+  | { kind: 'task'; task: Task }
   | null;
 
 export function ProjectScreen({ id }: { id: string }) {
   const [sheet, setSheet] = useState<OpenSheet>(null);
+  const toast = useUndoToast();
   const data = useLiveQuery(async () => {
     const project = await db.projects.get(id);
     if (!project) return null;
-    const [hobby, steps, logs, hobbies] = await Promise.all([
+    const [hobby, steps, logs, hobbies, tasks] = await Promise.all([
       project.hobbyId ? db.hobbies.get(project.hobbyId) : undefined,
       db.steps.where('projectId').equals(id).toArray(),
       db.logs.where('projectId').equals(id).toArray(),
       db.hobbies.toArray(),
+      db.tasks.where('projectId').equals(id).toArray(),
     ]);
-    return { project, hobby, steps, logs, hobbies };
+    return { project, hobby, steps, logs, hobbies, tasks: tasks.filter((t) => !t.doneAt).sort(byDue) };
   }, [id]);
 
   if (data === undefined) return null; // still loading
@@ -43,7 +49,7 @@ export function ProjectScreen({ id }: { id: string }) {
     );
   }
 
-  const { project, hobby, steps, logs, hobbies } = data;
+  const { project, hobby, steps, logs, hobbies, tasks } = data;
   const back = hobby ? { label: hobby.name, path: `/hobbies/${hobby.id}` } : { label: 'Hobbies', path: '/hobbies' };
   const colour = hobby ? colourVar(hobby.colour) : 'var(--accent)';
   const open = steps.filter((s) => !s.doneAt).sort((a, b) => a.order - b.order);
@@ -103,6 +109,20 @@ export function ProjectScreen({ id }: { id: string }) {
         </>
       )}
 
+      {tasks.length > 0 && (
+        <>
+          <h2 className="section-header">Tasks</h2>
+          <div className="list">
+            {tasks.map((t) => (
+              <TaskRow key={t.id} task={t} onOpen={() => setSheet({ kind: 'task', task: t })} onDone={async () => {
+                const undo = await logIt(taskTarget(t, [project]));
+                toast.show(<>Done: <b>{t.title}</b></>, () => undoLog(undo));
+              }} />
+            ))}
+          </div>
+        </>
+      )}
+
       <div className="list" style={{ marginTop: 16 }}>
         <button className="list-row" onClick={() => setSheet({ kind: 'edit' })}>
           <span className="label">Name and hobby</span>
@@ -130,6 +150,10 @@ export function ProjectScreen({ id }: { id: string }) {
       {sheet?.kind === 'log' && (
         <LogSheet existing={sheet.log} context={project.name} colour={colour} hobbies={[]} onClose={() => setSheet(null)} />
       )}
+      {sheet?.kind === 'task' && (
+        <TaskSheet task={sheet.task} hobbies={hobby ? [hobby] : []} projects={[project]} onClose={() => setSheet(null)} />
+      )}
+      {toast.element}
     </Screen>
   );
 }

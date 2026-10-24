@@ -3,15 +3,19 @@ import { ChevronRight, FolderOpen, Pencil, Plus, Sprout } from 'lucide-react';
 import { useState } from 'react';
 import { ActivitySheet, HobbySheet, StatusSheet } from '../components/HobbySheets';
 import { ProjectSheet } from '../components/ProjectSheets';
+import { TaskRow, TaskSheet } from '../components/TaskSheets';
+import { useUndoToast } from '../components/UndoToast';
 import { navigate } from '../lib/router';
 import { LogSheet } from '../components/LogSheet';
 import { Empty, Screen } from '../components/Screen';
 import { Timeline } from '../components/Timeline';
-import { type Activity, db, type Log } from '../db';
+import { type Activity, db, type Log, type Task } from '../db';
 import { setHobbyStatus } from '../hobbies';
 import { today } from '../lib/dates';
 import { ENERGY_LABELS, EnergyIcon } from '../lib/energy';
 import { colourVar, STATUS_LABELS } from '../lib/labels';
+import { logIt, undoLog } from '../logging';
+import { byDue, taskTarget } from '../tasks';
 import { buildTimeline, yearStrip } from '../timeline';
 
 type OpenSheet =
@@ -20,20 +24,26 @@ type OpenSheet =
   | { kind: 'activity'; activity?: Activity }
   | { kind: 'log'; log: Log }
   | { kind: 'project' }
+  | { kind: 'task'; task: Task }
   | null;
 
 export function HobbyScreen({ id }: { id: string }) {
   const [sheet, setSheet] = useState<OpenSheet>(null);
+  const toast = useUndoToast();
   const data = useLiveQuery(async () => {
     const hobby = await db.hobbies.get(id);
     if (!hobby) return null;
-    const [activities, projects, logs, goals] = await Promise.all([
+    const [activities, projects, logs, goals, tasks] = await Promise.all([
       db.activities.where('hobbyId').equals(id).toArray(),
       db.projects.where('hobbyId').equals(id).toArray(),
       db.logs.where('hobbyId').equals(id).toArray(),
       db.goals.toArray(),
+      db.tasks.where('hobbyId').equals(id).toArray(),
     ]);
-    return { hobby, activities: activities.filter((a) => !a.archived), projects, logs, goals };
+    return {
+      hobby, activities: activities.filter((a) => !a.archived), projects, logs, goals,
+      tasks: tasks.filter((t) => !t.doneAt).sort(byDue),
+    };
   }, [id]);
 
   const back = { label: 'Hobbies', path: '/hobbies' };
@@ -46,7 +56,7 @@ export function HobbyScreen({ id }: { id: string }) {
     );
   }
 
-  const { hobby, activities, projects, logs, goals } = data;
+  const { hobby, activities, projects, logs, goals, tasks } = data;
   const colour = colourVar(hobby.colour);
   const strip = yearStrip(logs, today());
   const months = buildTimeline(hobby, logs, projects);
@@ -124,6 +134,20 @@ export function HobbyScreen({ id }: { id: string }) {
         </button>
       </div>
 
+      {tasks.length > 0 && (
+        <>
+          <h2 className="section-header">Tasks</h2>
+          <div className="list">
+            {tasks.map((t) => (
+              <TaskRow key={t.id} task={t} onOpen={() => setSheet({ kind: 'task', task: t })} onDone={async () => {
+                const undo = await logIt(taskTarget(t, projects));
+                toast.show(<>Done: <b>{t.title}</b></>, () => undoLog(undo));
+              }} />
+            ))}
+          </div>
+        </>
+      )}
+
       <h2 className="section-header">Projects</h2>
       <div className="list">
         {[...projects].sort((a, b) => Number(a.status === 'finished') - Number(b.status === 'finished')).map((p) => (
@@ -154,6 +178,11 @@ export function HobbyScreen({ id }: { id: string }) {
         <ProjectSheet hobbies={[hobby]} hobbyId={hobby.id} onClose={() => setSheet(null)}
           onCreated={(projectId) => navigate(`/projects/${projectId}`)} />
       )}
+      {sheet?.kind === 'task' && (
+        <TaskSheet task={sheet.task} hobbies={[hobby]} projects={projects.filter((p) => p.status === 'active')}
+          onClose={() => setSheet(null)} />
+      )}
+      {toast.element}
     </Screen>
   );
 }

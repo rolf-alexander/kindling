@@ -152,6 +152,37 @@ projects and, further down, finished ones).
 **Not done (yet):** activities that belong to a project rather than a hobby. Steps cover this for now; the data
 model already allows it if it's wanted.
 
+## D21. Goals show what you did, never what's left
+**Chose:** Each goal card says "2 this week" (or "A fresh week" when nothing yet), with the target as a quiet
+"Aiming for 3 a week". Reaching it adds a soft tick. Below, the last 8 weeks (or months) are soft dots shaded by how
+close they came, with no numbers. Weeks start Monday; each period starts fresh.
+**Rejected:** "2 of 3" or empty slots waiting to be filled. Both point at what's missing.
+**Resting:** a goal that belongs to a paused or semi-retired hobby says "Resting with Hiking" and shows no target.
+**Removing a goal** unlinks it from activities and routines; past logs keep their snapshot (D5).
+
+## D22. Routines: one tap on their own tab
+**Chose:** Each routine is a card with its steps underneath and a ✓ that logs it at once, with Undo. After logging it
+says "Done today at 8:02", and it can be logged again (e.g. morning and evening). Routines never appear on Today.
+Their logs show on the calendar and count towards their goals.
+
+## D23. Important tasks
+**Chose:** a list under More, at most 5 open. A due date reads "By Sun 15 Nov" before and after the day: no red, no
+"overdue". The tick marks it done (with Undo) and logs it, so a linked task appears on its hobby's or project's timeline.
+Linked tasks also show on that page. Done tasks stay quietly visible under "Recently done" for 14 days.
+
+## D24. Books & shows
+**Chose:** Up next (at most 5, any one can move to the top) → **Start** → Currently → **Finished** (with Undo).
+While something is current, tapping its camera tile takes the cover photo. Finished ones are listed by year as
+"Reading & Watching", and finishing logs it (shown on the calendar as "Reading & Watching", not under a hobby, per D9).
+**Not done:** fetching covers automatically (still undecided).
+
+## D25. Icon and launch screen
+**Chose:** a cream flame on a warm orange gradient, and a launch screen with the orange flame on the app's light or
+dark background. Both are drawn from `scripts/flame.svg` by `scripts/make-images.mjs` (rerun it after changing the
+flame). iPhone needs one launch image per screen size; the common iPhones from the SE onwards are covered.
+**Catch:** iPhone only picks up a new icon or launch screen when the app is removed from the home screen and added
+again, and removing it deletes its data. So: take a backup first, or do it while there's nothing to lose.
+
 ---
 
 ## Provisional (revisit after a week of real use)
