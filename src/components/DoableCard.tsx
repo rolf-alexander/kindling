@@ -17,7 +17,7 @@ export function DoableCard({ title, energy, context, colour, onOpen, onQuickLog 
   return (
     <div className="doable-card">
       <button className="doable-main" onClick={onOpen}>
-        <span className="energy-tile" style={{ background: `color-mix(in srgb, ${colour} 20%, transparent)`, color: colour }}>
+        <span className="energy-tile" style={{ background: colour }}>
           <EnergyIcon energy={energy} />
         </span>
         <span className="doable-text">

@@ -193,6 +193,17 @@ the dark launch screens of D25).
 scrolls, and long-pressing no longer selects text.
 **Change our minds if:** dark mode is missed at night. It would mean adding the dark colour set back.
 
+## D27. Design sweep: a calendar like a monthly recap, and more colour
+**Calendar:** every day is a circle. A day you did something is filled with that hobby's colour, and a mixed day is
+split into slices (up to 3 colours). Quiet past days are soft grey, pencilled-in days have a dashed orange ring, and
+the selected day has a dark ring. Under the grid is a key of what the month held (names only, no counts). The month
+name is large, with the year in grey.
+**Everywhere:** white cards with a soft shadow on a very light grey page. Headings use the iPhone's rounded font
+(SF Pro Rounded). Suggestion, routine and activity tiles are solid colour with white icons. Hobbies have a colour tile
+with their initial. More's rows get colourful iPhone-Settings-style icons. "+ New…" buttons became small pills.
+**Own colours:** routines are pink, books and shows warm brown, and anything not linked to a hobby is grey, so they
+no longer look like they belong to the orange hobby.
+
 ---
 
 ## Provisional (revisit after a week of real use)

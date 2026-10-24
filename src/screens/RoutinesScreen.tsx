@@ -53,7 +53,7 @@ export function RoutinesScreen() {
           return (
             <div className="doable-card" key={r.id}>
               <button className="doable-main" onClick={() => setEditing({ routine: r })}>
-                <span className="energy-tile" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
+                <span className="energy-tile" style={{ background: 'var(--routine)' }}>
                   {done.length ? <Check size={20} strokeWidth={2.4} /> : <Sparkles size={20} />}
                 </span>
                 <span className="doable-text">

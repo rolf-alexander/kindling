@@ -6,11 +6,11 @@ import { Screen } from '../components/Screen';
 import { config } from '../config';
 import type { Day, Log } from '../db';
 import { formatDay, monthGrid, today } from '../lib/dates';
+import { useLive } from '../lib/useLive';
 import type { LogTarget } from '../logging';
 import { pencilIn, removePlan } from '../plans';
 import { type Doable, isSuggestible, keyOf, toDoables, weigher } from '../suggest';
 import { contextFor, loadWorld } from '../world';
-import { useLive } from '../lib/useLive';
 
 type OpenSheet =
   | { kind: 'pencil' }
@@ -19,7 +19,8 @@ type OpenSheet =
   | { kind: 'details'; log: Log }
   | null;
 
-const MAX_DOTS = 4;
+/** A day with more than this many colours shows only the first ones. */
+const MAX_COLOURS = 3;
 
 /** Weekday initials in calendar order, e.g. M T W T F S S. */
 function weekdayLetters() {
@@ -27,6 +28,13 @@ function weekdayLetters() {
   return Array.from({ length: 7 }, (_, i) =>
     new Date(2026, 0, sunday.getDate() + config.weekStartsOn + i).toLocaleDateString(undefined, { weekday: 'narrow' }),
   );
+}
+
+/** One colour fills the circle; two or three share it like slices, so a mixed day looks like a mixed day. */
+function fill(colours: string[]) {
+  if (colours.length <= 1) return colours[0];
+  const share = 100 / colours.length;
+  return `conic-gradient(${colours.map((c, i) => `${c} ${i * share}% ${(i + 1) * share}%`).join(', ')})`;
 }
 
 export function CalendarScreen() {
@@ -57,7 +65,19 @@ export function CalendarScreen() {
     const d = new Date(year, monthNumber - 1 + by, 1);
     setMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
   };
-  const monthLabel = new Date(year, monthNumber - 1, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  const monthName = new Date(year, monthNumber - 1, 1).toLocaleDateString(undefined, { month: 'long' });
+
+  // What this month held, for the key under the grid: each hobby (or kind of thing) once, most frequent first.
+  const legend = new Map<string, { label: string; colour: string; count: number }>();
+  for (const log of world.logs.filter((l) => l.day.startsWith(month))) {
+    const { colour } = contextFor(log, world);
+    const hobby = world.hobbies.find((h) => h.id === log.hobbyId);
+    const name = hobby ? hobby.name : log.refType === 'routine' ? 'Routines' : log.refType === 'media' ? 'Reading & Watching' : 'Other';
+    const entry = legend.get(colour) ?? { label: name, colour, count: 0 };
+    entry.count++;
+    legend.set(colour, entry);
+  }
+  const key = [...legend.values()].sort((a, b) => b.count - a.count);
 
   const selectedLogs = logsOn(selected);
   const selectedPlans = plansOn(selected);
@@ -71,36 +91,36 @@ export function CalendarScreen() {
     <Screen title="Calendar">
       <div className="card calendar">
         <div className="month-switcher">
-          <button className="icon-button" aria-label="Previous month" onClick={() => shiftMonth(-1)}>
-            <ChevronLeft size={22} />
+          <h2 className="month-label">{monthName} <span>{year}</span></h2>
+          <button className="round-button" aria-label="Previous month" onClick={() => shiftMonth(-1)}>
+            <ChevronLeft size={20} />
           </button>
-          <span className="month-label">{monthLabel}</span>
-          <button className="icon-button" aria-label="Next month" onClick={() => shiftMonth(1)}>
-            <ChevronRight size={22} />
+          <button className="round-button" aria-label="Next month" onClick={() => shiftMonth(1)}>
+            <ChevronRight size={20} />
           </button>
         </div>
         <div className="cal-grid">
           {weekdayLetters().map((letter, i) => <span key={i} className="cal-weekday">{letter}</span>)}
           {grid.map((day, i) => {
             if (!day) return <span key={`blank-${i}`} />;
-            const logs = logsOn(day);
-            const plans = plansOn(day);
+            const colours = [...new Set(logsOn(day).map((log) => contextFor(log, world).colour))].slice(0, MAX_COLOURS);
+            const planned = plansOn(day).length > 0;
+            const state = colours.length ? 'done' : day <= todayDay ? 'quiet' : planned ? 'planned' : 'ahead';
             return (
-              <button key={day} className="cal-day" aria-pressed={day === selected}
+              <button key={day} className="cal-day" data-state={state} aria-pressed={day === selected}
                 data-today={day === todayDay || undefined} onClick={() => setSelected(day)}>
-                <span className="cal-number">{Number(day.slice(8))}</span>
-                <span className="cal-dots">
-                  {logs.slice(0, MAX_DOTS).map((log) => (
-                    <span key={log.id} className="cal-dot" style={{ background: contextFor(log, world).colour }} />
-                  ))}
-                  {plans.slice(0, Math.max(0, MAX_DOTS - logs.length)).map(({ plan }) => (
-                    <span key={plan.id} className="cal-dot planned" />
-                  ))}
-                </span>
+                <span className="cal-circle" style={{ background: fill(colours) }}>{Number(day.slice(8))}</span>
               </button>
             );
           })}
         </div>
+        {key.length > 0 && (
+          <div className="cal-key">
+            {key.map((k) => (
+              <span key={k.colour} className="cal-key-item"><span className="dot" style={{ background: k.colour }} />{k.label}</span>
+            ))}
+          </div>
+        )}
       </div>
 
       <h2 className="section-header">{selected === todayDay ? `Today · ${formatDay(selected)}` : formatDay(selected)}</h2>
@@ -130,6 +150,9 @@ export function CalendarScreen() {
                   {log.title}
                   {label && <span className="row-subtitle">{label}</span>}
                 </span>
+                <span className="detail">
+                  {selected === todayDay && new Date(log.at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                </span>
               </button>
             );
           })}
@@ -140,15 +163,15 @@ export function CalendarScreen() {
         </p>
       )}
 
-      <div className="stack" style={{ marginTop: 16 }}>
+      <div className="pill-row">
         {selected >= todayDay && (
-          <button className="button secondary" onClick={() => setSheet({ kind: 'pencil' })}>
-            <CalendarPlus size={18} /> Pencil something in
+          <button className="pill-button" onClick={() => setSheet({ kind: 'pencil' })}>
+            <CalendarPlus size={16} /> Pencil in
           </button>
         )}
         {selected <= todayDay && (
-          <button className="button secondary" onClick={() => setSheet({ kind: 'pickLog' })}>
-            <Plus size={18} /> Add something you did
+          <button className="pill-button" onClick={() => setSheet({ kind: 'pickLog' })}>
+            <Plus size={16} /> Add something you did
           </button>
         )}
       </div>

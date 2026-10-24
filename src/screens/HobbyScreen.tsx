@@ -72,8 +72,8 @@ export function HobbyScreen({ id }: { id: string }) {
           {strip.map((m) => (
             <div key={m.key} className="year-month">
               <span className="year-dot" style={{
-                background: m.level ? colour : 'var(--separator)',
-                opacity: m.level ? [0, 0.45, 0.75, 1][m.level] : 0.5,
+                background: m.level ? colour : 'var(--empty)',
+                opacity: m.level ? [0, 0.45, 0.75, 1][m.level] : 1,
               }} />
               <span className="year-letter">{m.letter}</span>
             </div>
@@ -118,7 +118,7 @@ export function HobbyScreen({ id }: { id: string }) {
           ].filter(Boolean).join(' · ');
           return (
             <button className="list-row" key={a.id} onClick={() => setSheet({ kind: 'activity', activity: a })}>
-              <span className="icon-tile" style={{ background: `color-mix(in srgb, ${colour} 20%, transparent)`, color: colour }}>
+              <span className="icon-tile" style={{ background: colour, color: '#fff' }}>
                 <EnergyIcon energy={a.energy} size={16} />
               </span>
               <span className="label">

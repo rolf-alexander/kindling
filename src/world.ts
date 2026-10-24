@@ -29,5 +29,9 @@ export function contextFor(item: { refType: string; hobbyId?: string; projectId?
     : item.refType === 'routine' ? 'Routine'
     : item.refType === 'media' ? 'Reading & Watching'
     : name ?? '';
-  return { label, colour: hobby ? colourVar(hobby.colour) : 'var(--accent)' };
+  const colour = hobby ? colourVar(hobby.colour)
+    : item.refType === 'routine' ? 'var(--routine)'
+    : item.refType === 'media' ? 'var(--media)'
+    : 'var(--neutral)';
+  return { label, colour };
 }

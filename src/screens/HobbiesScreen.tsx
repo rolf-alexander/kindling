@@ -74,7 +74,7 @@ export function HobbiesScreen() {
                 const detail = status === 'paused' ? 'Resting' : `${count} ${count === 1 ? 'activity' : 'activities'}`;
                 return (
                   <button className="list-row" key={hobby.id} onClick={() => navigate(`/hobbies/${hobby.id}`)}>
-                    <span className="dot" style={{ background: colourVar(hobby.colour) }} />
+                    <span className="hobby-tile" style={{ background: colourVar(hobby.colour) }}>{hobby.name.slice(0, 1)}</span>
                     <span className="label">{hobby.name}</span>
                     <span className="detail">{detail}</span>
                     <ChevronRight size={18} className="chevron" />
@@ -90,9 +90,9 @@ export function HobbiesScreen() {
       {activeProjects.length > 0 ? <div className="list">{activeProjects}</div>
         : <p className="note" style={{ marginTop: 0 }}>No projects on the go.</p>}
 
-      <div className="stack" style={{ marginTop: 24 }}>
-        <button className="button secondary" onClick={() => setAdding('hobby')}><Plus size={18} /> New hobby</button>
-        <button className="button secondary" onClick={() => setAdding('project')}><Plus size={18} /> New project</button>
+      <div className="pill-row">
+        <button className="pill-button" onClick={() => setAdding('hobby')}><Plus size={16} /> New hobby</button>
+        <button className="pill-button" onClick={() => setAdding('project')}><Plus size={16} /> New project</button>
       </div>
 
       {finishedProjects.length > 0 && (

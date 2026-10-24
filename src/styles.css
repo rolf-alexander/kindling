@@ -2,8 +2,10 @@
    Always light, like the Gentler Streak references: white pages, soft grey tiles, bright friendly colours. */
 :root {
   color-scheme: light;
-  --bg: #ffffff;
-  --card: #f2f2f6;
+  --bg: #f6f6f9;
+  --card: #ffffff;
+  --shadow: 0 1px 2px rgba(20, 20, 40, 0.04), 0 4px 14px rgba(20, 20, 40, 0.05);
+  --empty: #ebebf0; /* empty dots and days */
   --text: #111114;
   --muted: #86868e;
   --separator: rgba(60, 60, 67, 0.14);
@@ -18,6 +20,12 @@
   --hobby-butter: #f6c431;
   --hobby-lilac: #a57ef0;
   --hobby-sea: #2ec4c0;
+
+  /* Things that don't belong to a hobby get their own colours. */
+  --routine: #e58fc6;
+  --media: #c49567;
+  --neutral: #9a9aaa;
+  --rounded: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
 
   --radius: 16px;
   --gutter: 16px;
@@ -45,7 +53,7 @@ button, label { font: inherit; color: inherit; touch-action: manipulation; curso
 
 /* A soft warm glow behind the top of Today, like the sky in the references. */
 .screen.tinted {
-  background: linear-gradient(180deg, #ffe6cf 0, #fff5eb 160px, rgba(255, 255, 255, 0) 340px) no-repeat;
+  background: linear-gradient(180deg, #ffe3c8 0, #fff1e4 150px, rgba(246, 246, 249, 0) 340px) no-repeat;
 }
 /* Pages you go into (with a back link) slide in slightly. */
 .screen.pushed { animation: push-in 0.22s ease-out; }
@@ -67,6 +75,7 @@ button, label { font: inherit; color: inherit; touch-action: manipulation; curso
 }
 .large-title {
   margin: 2px 0 16px;
+  font-family: var(--rounded);
   font-size: 34px;
   font-weight: 800;
   letter-spacing: -0.4px;
@@ -74,19 +83,23 @@ button, label { font: inherit; color: inherit; touch-action: manipulation; curso
 
 /* --- Grouped lists and cards --- */
 .section-header {
-  margin: 24px var(--gutter) 6px;
+  margin: 26px 4px 8px;
   font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
   color: var(--muted);
 }
 .card {
   background: var(--card);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 16px;
 }
 .list {
   background: var(--card);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   overflow: hidden;
 }
 .list-row {
@@ -145,7 +158,7 @@ button.list-row:not(:disabled):active { background: var(--separator); }
   color: #fff;
   cursor: pointer;
 }
-.button.secondary { background: var(--accent-soft); color: var(--accent); }
+.button.secondary { background: var(--card); color: var(--accent); box-shadow: var(--shadow); }
 .button:disabled { opacity: 0.45; }
 .button:not(:disabled):active { filter: brightness(0.92); }
 .back {
@@ -176,6 +189,7 @@ textarea.paste {
   border-radius: var(--radius);
   padding: 14px 16px;
   background: var(--card);
+  box-shadow: var(--shadow);
   color: var(--text);
   font: 16px/1.4 ui-monospace, "SF Mono", Menlo, monospace;
   resize: vertical;
@@ -227,6 +241,7 @@ details.format pre {
   align-items: center;
   background: var(--card);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 .doable-main {
   flex: 1;
@@ -240,8 +255,9 @@ details.format pre {
   text-align: left;
 }
 .energy-tile {
-  width: 44px; height: 44px;
-  border-radius: 12px;
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  color: #fff;
   display: grid; place-items: center;
   flex-shrink: 0;
 }
@@ -289,7 +305,7 @@ details.format pre {
   background: var(--separator);
 }
 .sheet-context { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 15px; }
-.sheet-title { margin: 4px 0 8px; font-size: 24px; font-weight: 700; }
+.sheet-title { margin: 4px 0 8px; font-family: var(--rounded); font-size: 24px; font-weight: 800; }
 .field-label { margin: 16px 0 8px; color: var(--muted); font-size: 13px; text-transform: uppercase; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
@@ -300,6 +316,7 @@ details.format pre {
   border: 0;
   border-radius: 999px;
   background: var(--card);
+  box-shadow: var(--shadow);
   font-size: 15px;
 }
 .chip[aria-pressed="true"] { background: var(--accent); color: #fff; }
@@ -364,7 +381,7 @@ details.format pre {
 /* --- Hobby page --- */
 .year-strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
 .year-month { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.year-dot { width: 18px; height: 18px; border-radius: 50%; }
+.year-dot { width: 20px; height: 20px; border-radius: 50%; }
 .year-letter { font-size: 11px; color: var(--muted); }
 .timeline-date {
   width: 32px;
@@ -432,30 +449,44 @@ details.format pre {
   text-align: left;
 }
 
-/* --- Calendar --- */
-.calendar { padding: 10px 10px 14px; }
-.month-switcher { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.month-switcher .icon-button { color: var(--accent); }
-.month-label { font-weight: 600; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 4px; }
-.cal-weekday { text-align: center; font-size: 12px; color: var(--muted); padding-bottom: 4px; }
-.cal-day {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  min-height: 48px;
-  padding: 4px 0;
+/* --- Calendar: each day a circle, filled with the colours of what you did (like a monthly recap) --- */
+.calendar { padding: 16px 12px 14px; }
+.month-switcher { display: flex; align-items: center; gap: 8px; margin: 0 4px 12px; }
+.month-label { flex: 1; margin: 0; font-family: var(--rounded); font-size: 24px; font-weight: 800; }
+.month-label span { color: var(--muted); font-weight: 700; }
+.round-button {
+  width: 34px; height: 34px;
   border: 0;
-  border-radius: 10px;
-  background: none;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text);
+  display: grid; place-items: center;
 }
-.cal-number { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; font-size: 15px; }
-.cal-day[data-today] .cal-number { color: var(--accent); font-weight: 700; }
-.cal-day[aria-pressed="true"] .cal-number { background: var(--accent); color: #fff; font-weight: 600; }
-.cal-dots { display: flex; gap: 2px; min-height: 6px; }
-.cal-dot { width: 6px; height: 6px; border-radius: 50%; }
-.cal-dot.planned { background: none; border: 1.5px solid var(--accent); width: 6px; height: 6px; box-sizing: border-box; }
+.round-button:active { background: var(--empty); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 6px; }
+.cal-weekday { text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); padding-bottom: 2px; }
+.cal-day { display: grid; place-items: center; padding: 0; border: 0; background: none; }
+.cal-circle {
+  width: min(40px, 11vw); aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--rounded);
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform 0.15s ease-out;
+}
+.cal-day[data-state="done"] .cal-circle { color: #fff; font-weight: 800; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); }
+.cal-day[data-state="quiet"] .cal-circle { background: var(--empty); color: var(--muted); }
+.cal-day[data-state="planned"] .cal-circle { border: 2px dashed var(--accent); color: var(--accent); }
+.cal-day[data-state="ahead"] .cal-circle { color: var(--muted); }
+.cal-day[data-today] .cal-circle { font-weight: 800; }
+.cal-day[data-today][data-state="quiet"] .cal-circle { background: var(--accent-soft); color: var(--accent); }
+.cal-day[aria-pressed="true"] .cal-circle { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--text); transform: scale(0.92); }
+.cal-key { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 14px 4px 0; padding-top: 12px; border-top: 0.5px solid var(--separator); }
+.cal-key-item { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.cal-key-item .dot { width: 10px; height: 10px; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.pill-row .pill-button { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; background: var(--card); box-shadow: var(--shadow); }
 
 /* --- Toast (the "Logged" message with Undo) --- */
 .toast {
@@ -520,7 +551,7 @@ button.card:active { filter: brightness(0.97); }
 .goal-count { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 15px; }
 .goal-sub { display: flex; align-items: center; gap: 5px; margin: 2px 0 12px; color: var(--muted); font-size: 14px; }
 .goal-strip { display: flex; gap: 6px; }
-.goal-dot { width: 14px; height: 14px; border-radius: 50%; }
+.goal-dot { width: 16px; height: 16px; border-radius: 50%; }
 
 /* --- Tasks --- */
 .date-row { display: flex; align-items: center; gap: 8px; }
@@ -531,10 +562,27 @@ button.card:active { filter: brightness(0.97); }
   display: grid; place-items: center;
   flex-shrink: 0;
   border-radius: 8px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: color-mix(in srgb, var(--media) 18%, var(--card));
+  color: var(--media);
 }
 .media-card { display: flex; align-items: center; gap: 14px; padding: 12px 14px; }
 .media-card .photo-thumb { border-radius: 10px; }
 label[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
 .media-card .row-subtitle { display: block; margin-top: 2px; color: var(--muted); font-size: 14px; }
+
+/* --- Sweep: hobby tiles, goal numbers --- */
+.hobby-tile {
+  width: 30px; height: 30px;
+  border-radius: 9px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  color: #fff;
+  font-family: var(--rounded);
+  font-weight: 800;
+  font-size: 15px;
+}
+.list-row:has(.hobby-tile) + .list-row::before { left: calc(var(--gutter) + 42px); }
+.goal-name { font-family: var(--rounded); font-size: 19px; font-weight: 700; }
+.goal-count b { font-family: var(--rounded); font-size: 26px; font-weight: 800; color: var(--text); line-height: 1; }
+/* Buttons inside a white card sit on a soft tint rather than floating with their own shadow. */
+.card .button.secondary { background: var(--accent-soft); box-shadow: none; }

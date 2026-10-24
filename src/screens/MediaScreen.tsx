@@ -79,7 +79,6 @@ export function MediaScreen() {
                     <span className="doable-title">{m.title}</span>
                     <span className="row-subtitle">
                       {m.kind === 'book' ? 'Reading' : 'Watching'} since {shortDate(m.startedAt ?? Date.now())}
-                      {!m.photoId && ' · tap the camera for a cover'}
                     </span>
                   </span>
                 </button>

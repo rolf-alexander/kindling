@@ -66,7 +66,7 @@ export function GoalsScreen() {
                 {!resting && (
                   <span className="goal-count" style={reached ? { color: colour } : undefined}>
                     {reached && <CircleCheck size={16} />}
-                    {done ? `${done} this ${period}` : `A fresh ${period}`}
+                    {done ? <><b>{done}</b> this {period}</> : `A fresh ${period}`}
                   </span>
                 )}
               </div>
@@ -79,8 +79,8 @@ export function GoalsScreen() {
               <div className="goal-strip" aria-hidden>
                 {recentPeriods(goal, logs, day).map((p) => (
                   <span key={p.start} className="goal-dot" style={{
-                    background: p.level ? colour : 'var(--separator)',
-                    opacity: p.level ? [0, 0.45, 0.75, 1][p.level] : 0.5,
+                    background: p.level ? colour : 'var(--empty)',
+                    opacity: p.level ? [0, 0.45, 0.75, 1][p.level] : 1,
                   }} />
                 ))}
               </div>
