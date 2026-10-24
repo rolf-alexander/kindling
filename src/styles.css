@@ -1,38 +1,27 @@
-/* Colours are "tokens": named once here, switched for dark mode below, used everywhere else. */
+/* Colours are "tokens": named once here, used everywhere else.
+   Always light, like the Gentler Streak references: white pages, soft grey tiles, bright friendly colours. */
 :root {
-  --bg: #f2f2f7;
-  --card: #ffffff;
-  --text: #1c1c1e;
-  --muted: #8e8e93;
-  --separator: rgba(60, 60, 67, 0.18);
-  --accent: #ee8a3c;
-  --accent-soft: #fdebdc;
-  --bar: rgba(249, 249, 249, 0.86);
+  color-scheme: light;
+  --bg: #ffffff;
+  --card: #f2f2f6;
+  --text: #111114;
+  --muted: #86868e;
+  --separator: rgba(60, 60, 67, 0.14);
+  --accent: #f47b30;
+  --accent-soft: #feeadb;
+  --bar: rgba(255, 255, 255, 0.88);
 
-  /* Soft hobby colours. No red anywhere, on purpose. */
-  --hobby-peach: #f6b38a;
-  --hobby-sage: #8fcfa8;
-  --hobby-sky: #8ab8f0;
-  --hobby-butter: #f3d36b;
-  --hobby-lilac: #c3a6e8;
-  --hobby-sea: #7fd1cf;
+  /* Hobby colours: bright but never red, on purpose. The names are stored with each hobby, so they stay. */
+  --hobby-peach: #f8893f;
+  --hobby-sage: #34c38f;
+  --hobby-sky: #5b9df5;
+  --hobby-butter: #f6c431;
+  --hobby-lilac: #a57ef0;
+  --hobby-sea: #2ec4c0;
 
-  --radius: 14px;
+  --radius: 16px;
   --gutter: 16px;
   --tabbar-height: 56px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #000000;
-    --card: #1c1c1e;
-    --text: #f2f2f7;
-    --muted: #98989f;
-    --separator: rgba(84, 84, 88, 0.6);
-    --accent: #f29c58;
-    --accent-soft: #3a2817;
-    --bar: rgba(22, 22, 24, 0.86);
-  }
 }
 
 * { box-sizing: border-box; }
@@ -45,9 +34,22 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
+  /* Feel like an app, not a web page: long-pressing doesn't select text or pop up a menu. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
+input, textarea { -webkit-user-select: text; user-select: text; }
 
-button { font: inherit; color: inherit; }
+button, label { font: inherit; color: inherit; touch-action: manipulation; cursor: pointer; }
+
+/* A soft warm glow behind the top of Today, like the sky in the references. */
+.screen.tinted {
+  background: linear-gradient(180deg, #ffe6cf 0, #fff5eb 160px, rgba(255, 255, 255, 0) 340px) no-repeat;
+}
+/* Pages you go into (with a back link) slide in slightly. */
+.screen.pushed { animation: push-in 0.22s ease-out; }
+@keyframes push-in { from { opacity: 0; transform: translateX(18px); } }
 
 /* --- Screen with an iOS-style large title --- */
 .screen {
@@ -66,7 +68,7 @@ button { font: inherit; color: inherit; }
 .large-title {
   margin: 2px 0 16px;
   font-size: 34px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.4px;
 }
 
@@ -263,7 +265,7 @@ details.format pre {
   position: fixed;
   inset: 0;
   z-index: 20;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.25);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -275,7 +277,8 @@ details.format pre {
   max-height: 92dvh;
   overflow-y: auto;
   background: var(--bg);
-  border-radius: 14px 14px 0 0;
+  border-radius: 20px 20px 0 0;
+  overscroll-behavior: contain;
   padding: 8px 20px calc(env(safe-area-inset-bottom) + 20px);
   animation: slide-up 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
 }
@@ -508,7 +511,7 @@ details.format pre {
   font-weight: 500;
   color: var(--muted);
 }
-.tab[aria-current="page"] { color: var(--accent); }
+.tab[aria-current="page"] { color: var(--text); }
 
 /* --- Goals --- */
 button.card { display: block; width: 100%; border: 0; text-align: left; }

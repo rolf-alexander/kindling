@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { BookOpen, Camera, Plus, Tv } from 'lucide-react';
 import { useState } from 'react';
 import { PhotoThumb } from '../components/PhotoThumb';
@@ -11,6 +10,7 @@ import { savePhoto } from '../lib/photos';
 import {
   addMedia, backToUpNext, finishMedia, moveToFront, removeMedia, setCover, startMedia, undoFinish, updateMedia,
 } from '../media';
+import { useLive } from '../lib/useLive';
 
 const KIND_LABEL = { book: 'Book', show: 'Show' } as const;
 const shortDate = (at: number) => new Date(at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
@@ -34,7 +34,7 @@ function Cover({ media, size, onPhoto }: { media: Media; size: number; onPhoto?:
 }
 
 export function MediaScreen() {
-  const media = useLiveQuery(() => db.media.toArray());
+  const media = useLive('media', () => db.media.toArray());
   const [editing, setEditing] = useState<{ media?: Media } | null>(null);
   const toast = useUndoToast();
   if (!media) return null; // still loading

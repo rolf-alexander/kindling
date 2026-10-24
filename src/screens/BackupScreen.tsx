@@ -1,12 +1,12 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { type Backup, createBackupFile, readBackup, restoreBackup, shareBackup } from '../backup';
 import { Screen } from '../components/Screen';
 import { db } from '../db';
 import { daysAgo } from '../lib/dates';
+import { useLive } from '../lib/useLive';
 
 export function BackupScreen() {
-  const lastBackupAt = useLiveQuery(() => db.settings.get('lastBackupAt'))?.value as number | undefined;
+  const lastBackupAt = useLive('backup', () => db.settings.get('lastBackupAt'))?.value as number | undefined;
   const [preparing, setPreparing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [chosen, setChosen] = useState<Backup | null>(null);

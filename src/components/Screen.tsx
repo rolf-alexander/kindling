@@ -8,13 +8,15 @@ interface ScreenProps {
   eyebrow?: string;
   /** Adds a "‹ Back" link to the given screen. */
   back?: { label: string; path: string };
+  /** A soft warm glow behind the title (used on Today). */
+  tinted?: boolean;
   children: ReactNode;
 }
 
 /** A page with an iOS-style large title. */
-export function Screen({ title, eyebrow, back, children }: ScreenProps) {
+export function Screen({ title, eyebrow, back, tinted, children }: ScreenProps) {
   return (
-    <main className="screen">
+    <main className={['screen', tinted && 'tinted', back && 'pushed'].filter(Boolean).join(' ')}>
       {back && (
         <button className="back" onClick={() => navigate(back.path)}>
           <ChevronLeft size={24} strokeWidth={2.2} />

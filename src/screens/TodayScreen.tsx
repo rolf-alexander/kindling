@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { ClipboardPaste, Flame, Plus, Shuffle, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DoableCard } from '../components/DoableCard';
@@ -13,6 +12,7 @@ import { navigate } from '../lib/router';
 import { type LogTarget, logIt, type Undo, undoLog } from '../logging';
 import { type Doable, keyOf, suggest, toDoables } from '../suggest';
 import { contextFor, loadWorld, saveSuggestions } from '../world';
+import { useLive } from '../lib/useLive';
 
 /** A log that can still be undone, with the suggestions as they were before it. */
 type Logged = { undo: Undo; previousKeys: (string | null)[] };
@@ -25,7 +25,7 @@ type OpenSheet =
   | null;
 
 export function TodayScreen() {
-  const world = useLiveQuery(loadWorld);
+  const world = useLive('today', loadWorld);
   const day = today();
   const [sheet, setSheet] = useState<OpenSheet>(null);
   // The "Logged" message, with what's needed to undo it and put the suggestions back as they were.
@@ -52,7 +52,7 @@ export function TodayScreen() {
 
   if (world.hobbies.length === 0) {
     return (
-      <Screen title="Today" eyebrow={date}>
+      <Screen title="Today" eyebrow={date} tinted>
         <Empty icon={<Flame size={28} />} title="Nothing to suggest yet">
           Once your hobbies are pasted in, three ideas will appear here: one gentle, one middling, one lively.
         </Empty>
@@ -113,7 +113,7 @@ export function TodayScreen() {
   };
 
   return (
-    <Screen title="Today" eyebrow={date}>
+    <Screen title="Today" eyebrow={date} tinted>
       {pencilledIn.length > 0 && (
         <>
           <h2 className="section-header">Pencilled in</h2>

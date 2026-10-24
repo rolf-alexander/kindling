@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { Check, Plus, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { GoalPicker, withNewGoal } from '../components/GoalPicker';
@@ -9,12 +8,13 @@ import { db, type Goal, type Routine } from '../db';
 import { today } from '../lib/dates';
 import { logIt, undoLog } from '../logging';
 import { removeRoutine, routineTarget, saveRoutine } from '../routines';
+import { useLive } from '../lib/useLive';
 
 const time = (at: number) => new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 
 export function RoutinesScreen() {
   const day = today();
-  const data = useLiveQuery(async () => {
+  const data = useLive('routines', async () => {
     const [routines, goals, logsToday] = await Promise.all([
       db.routines.toArray(), db.goals.toArray(), db.logs.where('day').equals(day).toArray(),
     ]);

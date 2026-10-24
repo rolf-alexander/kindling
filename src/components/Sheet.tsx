@@ -2,11 +2,14 @@ import { type ReactNode, useEffect } from 'react';
 
 /** A panel that slides up from the bottom, iOS style. Tapping the dimmed background closes it. */
 export function Sheet({ onClose, children }: { onClose: () => void; children: ReactNode }) {
-  // Stop the page behind from scrolling while the sheet is open.
+  // Stop the page behind from scrolling while the sheet is open. On iPhone "overflow: hidden" alone isn't enough,
+  // so the page is pinned in place where it was, then put back when the sheet closes.
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    const y = window.scrollY;
+    Object.assign(document.body.style, { position: 'fixed', top: `-${y}px`, left: '0', right: '0' });
     return () => {
-      document.body.style.overflow = '';
+      Object.assign(document.body.style, { position: '', top: '', left: '', right: '' });
+      window.scrollTo(0, y);
     };
   }, []);
 

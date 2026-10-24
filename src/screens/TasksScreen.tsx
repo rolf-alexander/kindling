@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { CircleCheck, ListTodo, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Empty, Screen } from '../components/Screen';
@@ -8,12 +7,13 @@ import { config } from '../config';
 import { db, type Task } from '../db';
 import { logIt, undoLog } from '../logging';
 import { byDue, taskTarget } from '../tasks';
+import { useLive } from '../lib/useLive';
 
 /** Done tasks stay visible for this long, quietly, then drop off the list. */
 const RECENT_DAYS = 14;
 
 export function TasksScreen() {
-  const data = useLiveQuery(async () => {
+  const data = useLive('tasks', async () => {
     const [tasks, hobbies, projects] = await Promise.all([db.tasks.toArray(), db.hobbies.toArray(), db.projects.toArray()]);
     return { tasks, hobbies, projects };
   });

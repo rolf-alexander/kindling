@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { CalendarPlus, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import { LogSheet } from '../components/LogSheet';
@@ -11,6 +10,7 @@ import type { LogTarget } from '../logging';
 import { pencilIn, removePlan } from '../plans';
 import { type Doable, isSuggestible, keyOf, toDoables, weigher } from '../suggest';
 import { contextFor, loadWorld } from '../world';
+import { useLive } from '../lib/useLive';
 
 type OpenSheet =
   | { kind: 'pencil' }
@@ -30,7 +30,7 @@ function weekdayLetters() {
 }
 
 export function CalendarScreen() {
-  const world = useLiveQuery(loadWorld);
+  const world = useLive('calendar', loadWorld);
   const todayDay = today();
   const [month, setMonth] = useState(() => todayDay.slice(0, 7)); // "2026-10"
   const [selected, setSelected] = useState(todayDay);

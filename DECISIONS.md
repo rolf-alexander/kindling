@@ -183,6 +183,16 @@ flame). iPhone needs one launch image per screen size; the common iPhones from t
 **Catch:** iPhone only picks up a new icon or launch screen when the app is removed from the home screen and added
 again, and removing it deletes its data. So: take a backup first, or do it while there's nothing to lose.
 
+## D26. Always light, brighter colours, smoother feel
+**Chose:** Kindling stays light even when the phone is in dark mode, closer to the Gentler Streak references: white
+pages, soft grey tiles, near-black text, bright (never red) hobby colours, and a warm glow behind the top of Today.
+The selected tab is dark rather than orange. Launch screens are light only. This replaces the light/dark design (and
+the dark launch screens of D25).
+**Smoother:** screens you've seen before appear straight away instead of flashing blank while the database loads
+(`lib/useLive.ts`), new pages open at the top, pages you go into slide in slightly, the page behind a sheet no longer
+scrolls, and long-pressing no longer selects text.
+**Change our minds if:** dark mode is missed at night. It would mean adding the dark colour set back.
+
 ---
 
 ## Provisional (revisit after a week of real use)

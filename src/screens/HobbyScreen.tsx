@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { ChevronRight, FolderOpen, Pencil, Plus, Sprout } from 'lucide-react';
 import { useState } from 'react';
 import { ActivitySheet, HobbySheet, StatusSheet } from '../components/HobbySheets';
@@ -17,6 +16,7 @@ import { colourVar, STATUS_LABELS } from '../lib/labels';
 import { logIt, undoLog } from '../logging';
 import { byDue, taskTarget } from '../tasks';
 import { buildTimeline, yearStrip } from '../timeline';
+import { useLive } from '../lib/useLive';
 
 type OpenSheet =
   | { kind: 'status' }
@@ -30,7 +30,7 @@ type OpenSheet =
 export function HobbyScreen({ id }: { id: string }) {
   const [sheet, setSheet] = useState<OpenSheet>(null);
   const toast = useUndoToast();
-  const data = useLiveQuery(async () => {
+  const data = useLive('hobby', async () => {
     const hobby = await db.hobbies.get(id);
     if (!hobby) return null;
     const [activities, projects, logs, goals, tasks] = await Promise.all([
@@ -118,7 +118,7 @@ export function HobbyScreen({ id }: { id: string }) {
           ].filter(Boolean).join(' · ');
           return (
             <button className="list-row" key={a.id} onClick={() => setSheet({ kind: 'activity', activity: a })}>
-              <span className="icon-tile" style={{ background: `color-mix(in srgb, ${colour} 28%, transparent)`, color: colour }}>
+              <span className="icon-tile" style={{ background: `color-mix(in srgb, ${colour} 20%, transparent)`, color: colour }}>
                 <EnergyIcon energy={a.energy} size={16} />
               </span>
               <span className="label">

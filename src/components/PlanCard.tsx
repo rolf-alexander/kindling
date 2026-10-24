@@ -29,7 +29,7 @@ export function PlanCard({ world, today }: { world: World; today: Day }) {
           const { label, colour } = contextFor(doable!, world);
           return (
             <div className="list-row" key={plan.id}>
-              <span className="icon-tile" style={{ background: `color-mix(in srgb, ${colour} 28%, transparent)`, color: colour }}>
+              <span className="icon-tile" style={{ background: `color-mix(in srgb, ${colour} 20%, transparent)`, color: colour }}>
                 <CalendarCheck size={16} />
               </span>
               <span className="label">

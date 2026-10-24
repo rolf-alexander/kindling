@@ -10,7 +10,11 @@ export function currentPath() {
 export function useRoute() {
   const [path, setPath] = useState(currentPath);
   useEffect(() => {
-    const onChange = () => setPath(currentPath());
+    // A new screen starts at the top, rather than wherever the last one was scrolled to.
+    const onChange = () => {
+      setPath(currentPath());
+      window.scrollTo(0, 0);
+    };
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
   }, []);

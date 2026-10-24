@@ -1,14 +1,14 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { BookOpen, ChevronRight, ClipboardPaste, HardDriveDownload, ListTodo, type LucideIcon, Target } from 'lucide-react';
 import { Screen } from '../components/Screen';
 import { db } from '../db';
 import { daysAgo } from '../lib/dates';
 import { navigate } from '../lib/router';
+import { useLive } from '../lib/useLive';
 
 type Row = { label: string; Icon: LucideIcon; path: string; detail?: string };
 
 export function MoreScreen() {
-  const lastBackupAt = useLiveQuery(() => db.settings.get('lastBackupAt'))?.value as number | undefined;
+  const lastBackupAt = useLive('more', () => db.settings.get('lastBackupAt'))?.value as number | undefined;
 
   const sections: { header: string; rows: Row[] }[] = [
     {

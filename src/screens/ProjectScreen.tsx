@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { Check, CircleCheck, FolderOpen, Pencil, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { LogSheet } from '../components/LogSheet';
@@ -15,6 +14,7 @@ import { logIt, type Undo, undoLog } from '../logging';
 import { finishProject, reopenProject } from '../projects';
 import { byDue, taskTarget } from '../tasks';
 import { buildTimeline } from '../timeline';
+import { useLive } from '../lib/useLive';
 
 type OpenSheet =
   | { kind: 'edit' }
@@ -27,7 +27,7 @@ type OpenSheet =
 export function ProjectScreen({ id }: { id: string }) {
   const [sheet, setSheet] = useState<OpenSheet>(null);
   const toast = useUndoToast();
-  const data = useLiveQuery(async () => {
+  const data = useLive('project', async () => {
     const project = await db.projects.get(id);
     if (!project) return null;
     const [hobby, steps, logs, hobbies, tasks] = await Promise.all([

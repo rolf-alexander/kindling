@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { CircleCheck, Moon, Plus, Target } from 'lucide-react';
 import { useState } from 'react';
 import { Empty, Screen } from '../components/Screen';
@@ -7,12 +6,13 @@ import { db, type Goal, type Hobby } from '../db';
 import { logsThisPeriod, recentPeriods, removeGoal, restingWith, saveGoal } from '../goals';
 import { today } from '../lib/dates';
 import { colourVar } from '../lib/labels';
+import { useLive } from '../lib/useLive';
 
 const PERIOD_WORD = { week: 'week', month: 'month' } as const;
 const TARGETS = [1, 2, 3, 4, 5, 7];
 
 export function GoalsScreen() {
-  const data = useLiveQuery(async () => {
+  const data = useLive('goals', async () => {
     const [goals, hobbies, logs, activities, routines] = await Promise.all([
       db.goals.toArray(), db.hobbies.toArray(), db.logs.toArray(), db.activities.toArray(), db.routines.toArray(),
     ]);

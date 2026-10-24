@@ -38,24 +38,20 @@ for (const [file, size] of [['icon-512.png', 512], ['icon-192.png', 192], ['appl
   render(icon(size), `public/${file}`, size, size);
 }
 
-// --- Launch screens: the flame on the app's background colour, in light and dark. ---
+// --- Launch screens: the orange flame on white (Kindling is always light). ---
 // Each iPhone screen size needs its own image: [width, height, pixel ratio] in portrait.
 const SCREENS = [
   [440, 956, 3], [430, 932, 3], [428, 926, 3], [420, 912, 3], [414, 896, 3], [414, 896, 2],
   [402, 874, 3], [393, 852, 3], [390, 844, 3], [375, 812, 3], [375, 667, 2], [320, 568, 2],
 ];
-const THEMES = { light: '#f2f2f7', dark: '#000000' };
 mkdirSync('public/splash', { recursive: true });
 const links = [];
 for (const [w, h, dpr] of SCREENS) {
-  for (const [theme, bg] of Object.entries(THEMES)) {
-    const file = `splash/${w}x${h}@${dpr}-${theme}.png`;
-    render(`<div style="width:${w}px;height:${h}px;background:${bg};display:grid;place-items:center">
-      <div style="width:120px;height:120px">${flame('#ee8a3c', '#f7c08f')}</div></div>`,
-    `public/${file}`, w, h, dpr);
-    const media = `(device-width: ${w}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${dpr})`
-      + ` and (orientation: portrait)${theme === 'dark' ? ' and (prefers-color-scheme: dark)' : ''}`;
-    links.push(`  <link rel="apple-touch-startup-image" media="${media}" href="/kindling/${file}">`);
-  }
+  const file = `splash/${w}x${h}@${dpr}.png`;
+  render(`<div style="width:${w}px;height:${h}px;background:#ffffff;display:grid;place-items:center">
+    <div style="width:120px;height:120px">${flame('#f47b30', '#fbc396')}</div></div>`,
+  `public/${file}`, w, h, dpr);
+  const media = `(device-width: ${w}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${dpr}) and (orientation: portrait)`;
+  links.push(`  <link rel="apple-touch-startup-image" media="${media}" href="/kindling/${file}">`);
 }
 console.log('Images written. Launch-screen tags for index.html:\n' + links.join('\n'));

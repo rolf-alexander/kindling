@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { ChevronRight, ClipboardPaste, FolderOpen, Plus, Sprout } from 'lucide-react';
 import { useState } from 'react';
 import { HobbySheet } from '../components/HobbySheets';
@@ -7,15 +6,16 @@ import { Empty, Screen } from '../components/Screen';
 import { db } from '../db';
 import { colourVar, STATUS_LABELS, STATUS_ORDER } from '../lib/labels';
 import { navigate } from '../lib/router';
+import { useLive } from '../lib/useLive';
 
 const SECTION_NOTES: Partial<Record<string, string>> = {
   want: 'Suggested too. Make one active once it feels like part of your life.',
 };
 
 export function HobbiesScreen() {
-  const hobbies = useLiveQuery(() => db.hobbies.toArray());
-  const activities = useLiveQuery(() => db.activities.toArray());
-  const projects = useLiveQuery(() => db.projects.toArray());
+  const hobbies = useLive('hobbies-hobbies', () => db.hobbies.toArray());
+  const activities = useLive('hobbies-activities', () => db.activities.toArray());
+  const projects = useLive('hobbies-projects', () => db.projects.toArray());
   const [adding, setAdding] = useState<'hobby' | 'project' | null>(null);
   if (!hobbies || !activities || !projects) return null; // still loading
 
